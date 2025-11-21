@@ -7,7 +7,7 @@ public record PrescriptionResult(
         Long id,
         Long seniorId,
         LocalDate issuedDate,
-        LocalDate expiredDate,
+        String hospitalName,
         String doctorName,
         String note
 ) {
@@ -16,7 +16,7 @@ public record PrescriptionResult(
                 prescription.getId(),
                 prescription.getSenior().getId(),
                 prescription.getIssuedDate(),
-                prescription.getExpiredDate(),
+                prescription.getHospitalName(),
                 prescription.getDoctorName(),
                 prescription.getNote()
         );

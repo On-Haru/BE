@@ -32,8 +32,8 @@ public class Prescription {
     @Column(name = "issued_date", nullable = false)
     private LocalDate issuedDate;
 
-    @Column(name = "expired_date")
-    private LocalDate expiredDate;
+    @Column(name = "hospital_name", length = 100)
+    private String hospitalName;
 
     @Column(name = "doctor_name", length = 60)
     private String doctorName;
@@ -41,21 +41,18 @@ public class Prescription {
     @Column(name = "note", length = 200)
     private String note;
 
-    private Prescription(User senior, LocalDate issuedDate, LocalDate expiredDate, String doctorName, String note) {
+    private Prescription(User senior, LocalDate issuedDate, String hospitalName,
+            String doctorName, String note) {
         this.senior = senior;
         this.issuedDate = issuedDate;
-        this.expiredDate = expiredDate;
+        this.hospitalName = hospitalName;
         this.doctorName = doctorName;
         this.note = note;
     }
 
-    public static Prescription create(User senior, LocalDate issuedDate, LocalDate expiredDate, String doctorName, String note) {
-        return new Prescription(senior, issuedDate, expiredDate, doctorName, note);
+    public static Prescription create(User senior, LocalDate issuedDate, String hospitalName,
+            String doctorName, String note) {
+        return new Prescription(senior, issuedDate, hospitalName, doctorName, note);
     }
 
-    public static Prescription testInstance(Long id, User senior) {
-        Prescription prescription = new Prescription(senior, LocalDate.now(), LocalDate.now().plusMonths(1), "Dr. Test", "note");
-        prescription.id = id;
-        return prescription;
-    }
 }
