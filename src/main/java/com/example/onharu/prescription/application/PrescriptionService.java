@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class PrescriptionService {
 
     private final PrescriptionRepository prescriptionRepository;
+    private final PrescriptionMedicationService prescriptionMedicationService;
     private final UserRepository userRepository;
 
     @Transactional
@@ -26,14 +27,17 @@ public class PrescriptionService {
         User senior = userRepository.findById(command.seniorId())
                 .filter(user -> user.getRole() == UserRole.SENIOR)
                 .orElseThrow(() -> new BusinessException(ErrorCode.CARE_RECEIVER_NOT_FOUND));
+
         Prescription prescription = Prescription.create(
                 senior,
                 command.issuedDate(),
-                command.expiredDate(),
+                command.hospitalName(),
                 command.doctorName(),
                 command.note()
         );
-        return PrescriptionResult.from(prescriptionRepository.save(prescription));
+        Prescription savedPrescription = prescriptionRepository.save(prescription);
+        prescriptionMedicationService.registerMedicines(savedPrescription, command);
+        return PrescriptionResult.from(savedPrescription);
     }
 
     public PrescriptionResult getPrescription(Long prescriptionId) {

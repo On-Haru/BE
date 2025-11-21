@@ -8,7 +8,10 @@ public record MedicineResult(
         String name,
         int dailyDoseCount,
         String administrationMethod,
-        String memo
+        String memo,
+        Integer totalCount,
+        Integer durationDays,
+        String aiDescription
 ) {
     public static MedicineResult from(Medicine medicine) {
         return new MedicineResult(
@@ -17,7 +20,10 @@ public record MedicineResult(
                 medicine.getName(),
                 medicine.getDailyDoseCount(),
                 medicine.getAdministrationMethod(),
-                medicine.getMemo()
+                medicine.getMemo(),
+                medicine.getTotalCount(),
+                medicine.getDurationDays(),
+                medicine.getAiDescription()
         );
     }
 }

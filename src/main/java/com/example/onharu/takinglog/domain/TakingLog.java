@@ -29,10 +29,10 @@ public class TakingLog {
     @JoinColumn(name = "schedule_id", nullable = false)
     private MedicineSchedule schedule;
 
-    @Column(name = "scheduled_datetime", nullable = false)
+    @Column(name = "scheduled_datetime", nullable = false, columnDefinition = "DATETIME(0)")
     private LocalDateTime scheduledDateTime;
 
-    @Column(name = "taken_datetime")
+    @Column(name = "taken_datetime", columnDefinition = "DATETIME(0)")
     private LocalDateTime takenDateTime;
 
     @Column(name = "is_taken", nullable = false)
@@ -41,8 +41,9 @@ public class TakingLog {
     @Column(name = "delay_minutes")
     private Integer delayMinutes;
 
-    private TakingLog(MedicineSchedule schedule, LocalDateTime scheduledDateTime, LocalDateTime takenDateTime,
-                      boolean taken, Integer delayMinutes) {
+    private TakingLog(MedicineSchedule schedule, LocalDateTime scheduledDateTime,
+            LocalDateTime takenDateTime,
+            boolean taken, Integer delayMinutes) {
         this.schedule = schedule;
         this.scheduledDateTime = scheduledDateTime;
         this.takenDateTime = takenDateTime;
@@ -51,13 +52,20 @@ public class TakingLog {
     }
 
     public static TakingLog create(MedicineSchedule schedule, LocalDateTime scheduledDateTime,
-                                   LocalDateTime takenDateTime, boolean taken, Integer delayMinutes) {
-        return new TakingLog(schedule, scheduledDateTime, takenDateTime, taken, delayMinutes);
+            LocalDateTime takenDateTime, Integer delayMinutes) {
+        return new TakingLog(schedule, scheduledDateTime, takenDateTime, false, delayMinutes);
     }
 
     public static TakingLog testInstance(Long id, MedicineSchedule schedule) {
         TakingLog log = new TakingLog(schedule, LocalDateTime.now(), LocalDateTime.now(), true, 0);
         log.id = id;
         return log;
+    }
+
+    public void markAsTaken() {
+        this.taken = true;
+        this.takenDateTime = LocalDateTime.now();
+        this.delayMinutes = (int) java.time.Duration.between(scheduledDateTime, takenDateTime)
+                .toMinutes();
     }
 }

@@ -40,21 +40,38 @@ public class Medicine {
     @Column(name = "memo", length = 200)
     private String memo;
 
-    private Medicine(Prescription prescription, String name, int dailyDoseCount, String administrationMethod, String memo) {
+    @Column(name = "total_count")
+    private Integer totalCount;
+
+    @Column(name = "duration_days")
+    private Integer durationDays;
+
+    @Column(name = "ai_description", length = 200)
+    private String aiDescription;
+
+    private Medicine(Prescription prescription, String name, int dailyDoseCount,
+            String administrationMethod, String memo,
+            Integer totalCount, Integer durationDays, String aiDescription) {
         this.prescription = prescription;
         this.name = name;
         this.dailyDoseCount = dailyDoseCount;
         this.administrationMethod = administrationMethod;
         this.memo = memo;
+        this.totalCount = totalCount;
+        this.durationDays = durationDays;
+        this.aiDescription = aiDescription;
     }
 
-    public static Medicine create(Prescription prescription, String name, int dailyDoseCount, String administrationMethod, String memo) {
-        return new Medicine(prescription, name, dailyDoseCount, administrationMethod, memo);
+    public static Medicine create(Prescription prescription, String name, int dailyDoseCount,
+            String administrationMethod, String memo) {
+        return new Medicine(prescription, name, dailyDoseCount, administrationMethod, memo,
+                null, null, null);
     }
 
-    public static Medicine testInstance(Long id, Prescription prescription) {
-        Medicine medicine = new Medicine(prescription, "TestMed", 2, "ORAL", "none");
-        medicine.id = id;
-        return medicine;
+    public static Medicine createWithDetails(Prescription prescription, String name, int dailyDoseCount,
+            String administrationMethod, String memo, Integer totalCount,
+            Integer durationDays, String aiDescription) {
+        return new Medicine(prescription, name, dailyDoseCount, administrationMethod, memo,
+                totalCount, durationDays, aiDescription);
     }
 }

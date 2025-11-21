@@ -9,8 +9,10 @@ public record TakingLogCreateCommand(
         boolean taken,
         Integer delayMinutes
 ) {
+
     public static TakingLogCreateCommand of(Long scheduleId, LocalDateTime scheduledDateTime,
-                                            LocalDateTime takenDateTime, boolean taken, Integer delayMinutes) {
-        return new TakingLogCreateCommand(scheduleId, scheduledDateTime, takenDateTime, taken, delayMinutes);
+            LocalDateTime takenDateTime, boolean taken, Integer delayMinutes) {
+        return new TakingLogCreateCommand(scheduleId, scheduledDateTime, takenDateTime, taken,
+                delayMinutes);
     }
 }

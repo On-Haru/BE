@@ -29,7 +29,7 @@ public class PushController {
     @PostMapping("/notify/{userId}")
     public ResponseEntity<Void> notify(@RequestBody NotifyRequest request,
             @PathVariable Long userId) {
-        pushSubscriptionService.sendNotification(request, userId);
+        pushSubscriptionService.sendNotification(NotifyRequest.toNotifyData(request), userId);
         return ResponseEntity.ok().build();
     }
 }

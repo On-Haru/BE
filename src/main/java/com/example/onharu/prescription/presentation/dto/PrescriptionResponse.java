@@ -7,7 +7,7 @@ public record PrescriptionResponse(
         Long id,
         Long seniorId,
         LocalDate issuedDate,
-        LocalDate expiredDate,
+        String hospitalName,
         String doctorName,
         String note
 ) {
@@ -16,7 +16,7 @@ public record PrescriptionResponse(
                 result.id(),
                 result.seniorId(),
                 result.issuedDate(),
-                result.expiredDate(),
+                result.hospitalName(),
                 result.doctorName(),
                 result.note()
         );

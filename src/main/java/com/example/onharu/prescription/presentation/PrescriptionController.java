@@ -4,7 +4,7 @@ import com.example.onharu.global.api.ApiResponse;
 import com.example.onharu.global.api.ApiResponseFactory;
 import com.example.onharu.prescription.application.PrescriptionService;
 import com.example.onharu.prescription.application.dto.PrescriptionResult;
-import com.example.onharu.prescription.presentation.dto.PrescriptionCreateRequest;
+import com.example.onharu.prescription.presentation.dto.PrescriptionRequest;
 import com.example.onharu.prescription.presentation.dto.PrescriptionResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -23,8 +23,10 @@ public class PrescriptionController {
     private final PrescriptionService prescriptionService;
 
     @PostMapping
-    public ApiResponse<PrescriptionResponse> create(@Valid @RequestBody PrescriptionCreateRequest request) {
-        PrescriptionResult result = prescriptionService.createPrescription(request.toCommand());
+    public ApiResponse<PrescriptionResponse> create(
+            @Valid @RequestBody PrescriptionRequest request) {
+        PrescriptionResult result = prescriptionService.createPrescription(
+                PrescriptionRequest.toCommand(request));
         return ApiResponseFactory.success(PrescriptionResponse.from(result));
     }
 

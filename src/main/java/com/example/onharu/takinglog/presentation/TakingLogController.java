@@ -3,6 +3,7 @@ package com.example.onharu.takinglog.presentation;
 import com.example.onharu.global.api.ApiResponse;
 import com.example.onharu.global.api.ApiResponseFactory;
 import com.example.onharu.takinglog.application.TakingLogService;
+import com.example.onharu.takinglog.presentation.dto.TakenRequest;
 import com.example.onharu.takinglog.presentation.dto.TakingLogCreateRequest;
 import com.example.onharu.takinglog.presentation.dto.TakingLogResponse;
 import jakarta.validation.Valid;
@@ -24,9 +25,16 @@ public class TakingLogController {
     private final TakingLogService takingLogService;
 
     @PostMapping
-    public ApiResponse<TakingLogResponse> create(@Valid @RequestBody TakingLogCreateRequest request) {
+    public ApiResponse<TakingLogResponse> create(
+            @Valid @RequestBody TakingLogCreateRequest request) {
         var result = takingLogService.recordTaking(request.toCommand());
         return ApiResponseFactory.success(TakingLogResponse.from(result));
+    }
+
+    @PostMapping("/has-taken")
+    public ApiResponse<Void> hasTaken(@Valid @RequestBody TakenRequest request) {
+        takingLogService.hasTaken(request.toCommand());
+        return ApiResponseFactory.success();
     }
 
     @GetMapping("/{logId}")

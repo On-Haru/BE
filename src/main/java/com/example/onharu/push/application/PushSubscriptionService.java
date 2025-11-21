@@ -6,7 +6,7 @@ import com.example.onharu.global.properties.PushProperties;
 import com.example.onharu.global.util.GsonUtil;
 import com.example.onharu.push.domain.PushSubscription;
 import com.example.onharu.push.domain.PushSubscriptionRepository;
-import com.example.onharu.push.presentation.dto.NotifyRequest;
+import com.example.onharu.push.presentation.dto.NotifyRequest.NotifyData;
 import com.example.onharu.push.presentation.dto.SubscriptionRequest;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
@@ -50,7 +50,7 @@ public class PushSubscriptionService {
         pushSubscriptionRepository.save(subscription);
     }
 
-    public void sendNotification(NotifyRequest request, Long userId) {
+    public boolean sendNotification(NotifyData request, Long userId) {
         try {
             PushService webPush;
             try {
@@ -60,7 +60,12 @@ public class PushSubscriptionService {
                 throw new BusinessException(ErrorCode.PUSH_NOTIFICATION_FAILED);
             }
 
-            byte[] payload = GsonUtil.toJson(request.title(), request.body());
+            byte[] payload = GsonUtil.toJson(
+                    request.scheduleId(),
+                    request.title(),
+                    request.body(),
+                    request.scheduledDateTime());
+            boolean sent = false;
 
             for (PushSubscription entity : pushSubscriptionRepository.findAllByUserId(userId)) {
                 try {
@@ -71,14 +76,17 @@ public class PushSubscriptionService {
                             payload
                     );
                     sendToSubscriber(webPush, entity, notification);
+                    sent = true;
                 } catch (Exception e) {
                     log.warn("Failed to create or send notification for endpoint {}: {}",
                             entity.getEndpoint(), e.getMessage());
                     removeInvalidSubscription(entity);
                 }
             }
+            return sent;
         } catch (RuntimeException e) {
             log.warn("Failed to send push notification for user {}: {}", userId, e.getMessage());
+            return false;
         }
     }
 

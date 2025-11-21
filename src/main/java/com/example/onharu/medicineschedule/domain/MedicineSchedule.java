@@ -53,7 +53,8 @@ public class MedicineSchedule {
     private LocalDate endDate;
 
     private MedicineSchedule(Medicine medicine, ScheduleType scheduleType, RepeatType repeatType,
-                              Integer daysBitmask, LocalTime notifyTime, LocalDate startDate, LocalDate endDate) {
+            Integer daysBitmask, LocalTime notifyTime,
+            LocalDate startDate, LocalDate endDate) {
         this.medicine = medicine;
         this.scheduleType = scheduleType;
         this.repeatType = repeatType;
@@ -64,8 +65,10 @@ public class MedicineSchedule {
     }
 
     public static MedicineSchedule create(Medicine medicine, ScheduleType scheduleType, RepeatType repeatType,
-                                          Integer daysBitmask, LocalTime notifyTime, LocalDate startDate, LocalDate endDate) {
-        return new MedicineSchedule(medicine, scheduleType, repeatType, daysBitmask, notifyTime, startDate, endDate);
+            Integer daysBitmask, LocalTime notifyTime,
+            LocalDate startDate, LocalDate endDate) {
+        return new MedicineSchedule(medicine, scheduleType, repeatType, daysBitmask, notifyTime,
+                startDate, endDate);
     }
 
     public static MedicineSchedule testInstance(Long id, Medicine medicine) {

@@ -41,3 +41,8 @@ push:
     subject: "mailto:admin@onharu.com"
     public-key: ${PUBLIC_VAPID_KEY}
     private-key: ${PRIVATE_VAPID_KEY}
+
+scheduler:
+  medicine-alarm:
+    cron: "${CRON_EXPRESSION}"
+    enabled: true
