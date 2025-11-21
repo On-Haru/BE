@@ -4,7 +4,7 @@ import com.example.onharu.medicineschedule.application.event.MedicineAlarmEvent;
 import com.example.onharu.medicineschedule.domain.MedicineSchedule;
 import com.example.onharu.medicineschedule.domain.MedicineScheduleRepository;
 import com.example.onharu.push.application.PushSubscriptionService;
-import com.example.onharu.push.presentation.dto.NotifyRequest;
+import com.example.onharu.push.presentation.dto.NotifyRequest.NotifyData;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -45,13 +45,10 @@ public class MedicineAlarmScheduler {
         LocalDateTime scheduledDateTime = LocalDateTime.of(today, currentSlot);
         DayOfWeek todayOfWeek = today.getDayOfWeek();
 
-        log.info("Checking medicine schedules for {} at {}", today, currentSlot);
         List<MedicineSchedule> schedules = medicineScheduleRepository.findDueSchedules(
                 currentSlot,
                 today
         );
-
-        log.info("스케쥴 개수: {}", schedules.size());
 
         for (MedicineSchedule schedule : schedules) {
             if (!isDayEnabled(schedule, todayOfWeek)) {
@@ -63,15 +60,17 @@ public class MedicineAlarmScheduler {
                     .getSenior()
                     .getId();
 
+            Long scheduleId = schedule.getId();
             String title = String.format("[복약 알림] %s", schedule.getMedicine().getName());
             String body = String.format("%s 복약 시간입니다. 지금 복약을 확인해주세요.",
                     schedule.getScheduleType().name());
 
+            NotifyData data = NotifyData.of(scheduleId, title, body, scheduledDateTime);
+
             boolean success;
             String failureReason = null;
             try {
-                success = pushSubscriptionService.sendNotification(new NotifyRequest(title, body),
-                        userId);
+                success = pushSubscriptionService.sendNotification(data, userId);
                 if (!success) {
                     failureReason = "No active push subscription";
                 }
