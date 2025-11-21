@@ -44,7 +44,7 @@ public class TakingLogController {
     public ApiResponse<TakingLogMonthlyResponse> getMonthlyCalendar(
             @RequestParam int year,
             @RequestParam int month,
-            @RequestParam(required = false) Long userId
+            @RequestParam Long userId
     ) {
         var request = TakingLogMonthlyRequest.of(userId, year, month);
         var response = takingLogService.getMonthlyCalendar(request);
