@@ -6,7 +6,7 @@ import com.example.onharu.medicineschedule.domain.MedicineSchedule;
 import com.example.onharu.medicineschedule.domain.MedicineScheduleRepository;
 import com.example.onharu.takinglog.application.dto.TakenLogCommand;
 import com.example.onharu.takinglog.application.dto.TakingLogCreateCommand;
-import com.example.onharu.takinglog.application.dto.TakingLogResult;
+import com.example.onharu.takinglog.application.dto.TakingLogSlotDto;
 import com.example.onharu.takinglog.domain.TakingLog;
 import com.example.onharu.takinglog.domain.TakingLogRepository;
 import java.util.List;
@@ -24,39 +24,40 @@ public class TakingLogService {
     private final MedicineScheduleRepository medicineScheduleRepository;
 
     @Transactional
-    public TakingLogResult recordTaking(TakingLogCreateCommand command) {
-        MedicineSchedule schedule = medicineScheduleRepository.findById(command.scheduleId())
+    public TakingLogSlotDto recordTaking(TakingLogCreateCommand command) {
+        MedicineSchedule schedule = medicineScheduleRepository.findById(command.slotKey().scheduleId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.MEDICINE_SCHEDULE_NOT_FOUND));
         TakingLog takingLog = TakingLog.create(
                 schedule,
-                command.scheduledDateTime(),
+                command.slotKey().scheduledDateTime(),
                 command.takenDateTime(),
+                command.taken(),
                 command.delayMinutes()
         );
 
-        return TakingLogResult.from(takingLogRepository.save(takingLog));
+        return TakingLogSlotDto.from(takingLogRepository.save(takingLog));
     }
 
-    public TakingLogResult getLog(Long logId) {
+    public TakingLogSlotDto getLog(Long logId) {
         return takingLogRepository.findById(logId)
-                .map(TakingLogResult::from)
+                .map(TakingLogSlotDto::from)
                 .orElseThrow(() -> new BusinessException(ErrorCode.TAKING_LOG_NOT_FOUND));
     }
 
-    public List<TakingLogResult> getLogsBySchedule(Long scheduleId) {
+    public List<TakingLogSlotDto> getLogsBySchedule(Long scheduleId) {
         return takingLogRepository.findByScheduleId(scheduleId)
                 .stream()
-                .map(TakingLogResult::from)
+                .map(TakingLogSlotDto::from)
                 .collect(Collectors.toList());
     }
 
     @Transactional
     public void hasTaken(TakenLogCommand command) {
-        MedicineSchedule schedule = medicineScheduleRepository.findById(command.scheduleId())
+        medicineScheduleRepository.findById(command.slotKey().scheduleId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.MEDICINE_SCHEDULE_NOT_FOUND));
 
         TakingLog takingLog = takingLogRepository.findByScheduleIdAndScheduledDateTime(
-                        command.scheduleId(), command.scheduledDateTime())
+                        command.slotKey().scheduleId(), command.slotKey().scheduledDateTime())
                 .orElseThrow(() -> new BusinessException(ErrorCode.TAKING_LOG_NOT_FOUND));
 
         if (command.taken()) {

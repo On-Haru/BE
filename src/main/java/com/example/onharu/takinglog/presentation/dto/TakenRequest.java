@@ -12,8 +12,6 @@ public record TakenRequest(
 ) {
 
     public TakenLogCommand toCommand() {
-        return new TakenLogCommand(scheduleId, scheduledDateTime,
-                taken);
+        return TakenLogCommand.of(scheduleId, scheduledDateTime, taken);
     }
 }
-
