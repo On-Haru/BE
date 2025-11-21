@@ -6,6 +6,8 @@ import com.example.onharu.medicineschedule.domain.MedicineSchedule;
 import com.example.onharu.medicineschedule.domain.MedicineScheduleRepository;
 import com.example.onharu.takinglog.application.dto.TakenLogCommand;
 import com.example.onharu.takinglog.application.dto.TakingLogCreateCommand;
+import com.example.onharu.takinglog.application.dto.TakingLogMonthlyRequest;
+import com.example.onharu.takinglog.application.dto.TakingLogMonthlyResponse;
 import com.example.onharu.takinglog.application.dto.TakingLogSlotDto;
 import com.example.onharu.takinglog.domain.TakingLog;
 import com.example.onharu.takinglog.domain.TakingLogRepository;
@@ -25,13 +27,14 @@ public class TakingLogService {
 
     @Transactional
     public TakingLogSlotDto recordTaking(TakingLogCreateCommand command) {
-        MedicineSchedule schedule = medicineScheduleRepository.findById(command.slotKey().scheduleId())
+        MedicineSchedule schedule = medicineScheduleRepository.findById(
+                        command.slotKey().scheduleId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.MEDICINE_SCHEDULE_NOT_FOUND));
         TakingLog takingLog = TakingLog.create(
                 schedule,
                 command.slotKey().scheduledDateTime(),
                 command.takenDateTime(),
-                command.taken(),
+                false,
                 command.delayMinutes()
         );
 
@@ -49,6 +52,10 @@ public class TakingLogService {
                 .stream()
                 .map(TakingLogSlotDto::from)
                 .collect(Collectors.toList());
+    }
+
+    public TakingLogMonthlyResponse getMonthlyCalendar(TakingLogMonthlyRequest request) {
+        return TakingLogMonthlyResponse.empty(request.year(), request.month());
     }
 
     @Transactional
