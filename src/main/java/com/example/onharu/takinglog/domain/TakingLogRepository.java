@@ -10,4 +10,7 @@ public interface TakingLogRepository {
     Optional<TakingLog> findById(Long id);
 
     List<TakingLog> findByScheduleId(Long scheduleId);
+
+    Optional<TakingLog> findByScheduleIdAndScheduledDateTime(Long scheduleId,
+            java.time.LocalDateTime scheduledDateTime);
 }

@@ -26,6 +26,7 @@ public class MedicineScheduleService {
     public MedicineScheduleResult createSchedule(MedicineScheduleCreateCommand command) {
         Medicine medicine = medicineRepository.findById(command.medicineId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.MEDICINE_NOT_FOUND));
+
         MedicineSchedule schedule = MedicineSchedule.create(
                 medicine,
                 command.scheduleType(),

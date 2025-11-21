@@ -50,7 +50,7 @@ public class PushSubscriptionService {
         pushSubscriptionRepository.save(subscription);
     }
 
-    public void sendNotification(NotifyRequest request, Long userId) {
+    public boolean sendNotification(NotifyRequest request, Long userId) {
         try {
             PushService webPush;
             try {
@@ -61,6 +61,7 @@ public class PushSubscriptionService {
             }
 
             byte[] payload = GsonUtil.toJson(request.title(), request.body());
+            boolean sent = false;
 
             for (PushSubscription entity : pushSubscriptionRepository.findAllByUserId(userId)) {
                 try {
@@ -71,14 +72,17 @@ public class PushSubscriptionService {
                             payload
                     );
                     sendToSubscriber(webPush, entity, notification);
+                    sent = true;
                 } catch (Exception e) {
                     log.warn("Failed to create or send notification for endpoint {}: {}",
                             entity.getEndpoint(), e.getMessage());
                     removeInvalidSubscription(entity);
                 }
             }
+            return sent;
         } catch (RuntimeException e) {
             log.warn("Failed to send push notification for user {}: {}", userId, e.getMessage());
+            return false;
         }
     }
 

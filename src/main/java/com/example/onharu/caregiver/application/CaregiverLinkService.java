@@ -51,6 +51,7 @@ public class CaregiverLinkService {
 
     private User isValidSeniorCode(String phone, int code) {
         return userRepository.findByPhoneAndCode(phone, code)
+                .filter(User::isSenior)
                 .orElseThrow(() -> new BusinessException(ErrorCode.CARE_RECEIVER_INFO_MISMATCH));
     }
 

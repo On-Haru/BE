@@ -44,5 +44,5 @@ push:
 
 scheduler:
   medicine-alarm:
-    cron: "0 * * * * *"
+    cron: "${CRON_EXPRESSION}"
     enabled: true

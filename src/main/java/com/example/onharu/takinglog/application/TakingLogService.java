@@ -4,6 +4,7 @@ import com.example.onharu.global.exception.BusinessException;
 import com.example.onharu.global.exception.ErrorCode;
 import com.example.onharu.medicineschedule.domain.MedicineSchedule;
 import com.example.onharu.medicineschedule.domain.MedicineScheduleRepository;
+import com.example.onharu.takinglog.application.dto.TakenLogCommand;
 import com.example.onharu.takinglog.application.dto.TakingLogCreateCommand;
 import com.example.onharu.takinglog.application.dto.TakingLogResult;
 import com.example.onharu.takinglog.domain.TakingLog;
@@ -33,6 +34,7 @@ public class TakingLogService {
                 command.taken(),
                 command.delayMinutes()
         );
+
         return TakingLogResult.from(takingLogRepository.save(takingLog));
     }
 
@@ -47,5 +49,21 @@ public class TakingLogService {
                 .stream()
                 .map(TakingLogResult::from)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void hasTaken(TakenLogCommand command) {
+        MedicineSchedule schedule = medicineScheduleRepository.findById(command.scheduleId())
+                .orElseThrow(() -> new BusinessException(ErrorCode.MEDICINE_SCHEDULE_NOT_FOUND));
+
+        TakingLog takingLog = takingLogRepository.findByScheduleIdAndScheduledDateTime(
+                        command.scheduleId(), command.scheduledDateTime())
+                .orElseThrow(() -> new BusinessException(ErrorCode.MEDICINE_SCHEDULE_NOT_FOUND));
+
+        if (command.taken()) {
+            takingLog.markAsTaken();
+        }
+
+        takingLogRepository.save(takingLog);
     }
 }
