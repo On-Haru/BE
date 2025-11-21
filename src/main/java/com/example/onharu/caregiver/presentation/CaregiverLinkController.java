@@ -23,7 +23,7 @@ public class CaregiverLinkController {
 
     private final CaregiverLinkService caregiverLinkService;
 
-    @PostMapping
+    @PostMapping()
     public ApiResponse<CaregiverLinkResponse> createLink(@LoginUser Long userId,
             @Valid @RequestBody CaregiverLinkCreateRequest request) {
         CaregiverLinkResult result = caregiverLinkService.createLink(request.toCommand(userId));
