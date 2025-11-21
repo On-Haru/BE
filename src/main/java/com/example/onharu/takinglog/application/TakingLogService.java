@@ -31,7 +31,6 @@ public class TakingLogService {
                 schedule,
                 command.scheduledDateTime(),
                 command.takenDateTime(),
-                command.taken(),
                 command.delayMinutes()
         );
 
@@ -58,7 +57,7 @@ public class TakingLogService {
 
         TakingLog takingLog = takingLogRepository.findByScheduleIdAndScheduledDateTime(
                         command.scheduleId(), command.scheduledDateTime())
-                .orElseThrow(() -> new BusinessException(ErrorCode.MEDICINE_SCHEDULE_NOT_FOUND));
+                .orElseThrow(() -> new BusinessException(ErrorCode.TAKING_LOG_NOT_FOUND));
 
         if (command.taken()) {
             takingLog.markAsTaken();
