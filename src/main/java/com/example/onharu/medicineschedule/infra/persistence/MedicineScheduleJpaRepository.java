@@ -16,6 +16,9 @@ public interface MedicineScheduleJpaRepository
 
     @Override
     @Query("SELECT ms FROM MedicineSchedule ms " +
+            "JOIN FETCH ms.medicine m " +
+            "JOIN FETCH m.prescription p " +
+            "JOIN FETCH p.senior " +
             "WHERE ms.notifyTime = :notifyTime " +
             "AND ms.startDate <= :today " +
             "AND (ms.endDate IS NULL OR ms.endDate >= :today)")
