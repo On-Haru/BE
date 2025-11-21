@@ -51,7 +51,7 @@ public class TakingLogController {
         return ApiResponseFactory.success(response);
     }
 
-    @GetMapping("/{logId}")
+    @GetMapping("/{logId:\\d+}")
     public ApiResponse<TakingLogResponse> get(@PathVariable Long logId) {
         var result = takingLogService.getLog(logId);
         return ApiResponseFactory.success(TakingLogResponse.from(result));
