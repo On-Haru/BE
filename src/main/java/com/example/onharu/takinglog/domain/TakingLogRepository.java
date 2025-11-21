@@ -1,0 +1,13 @@
+package com.example.onharu.takinglog.domain;
+
+import java.util.List;
+import java.util.Optional;
+
+public interface TakingLogRepository {
+
+    TakingLog save(TakingLog takingLog);
+
+    Optional<TakingLog> findById(Long id);
+
+    List<TakingLog> findByScheduleId(Long scheduleId);
+}
