@@ -16,10 +16,10 @@ public final class ApiResponseFactory {
     }
 
     public static ApiResponse<Void> failure(ErrorCode errorCode) {
-        return new ApiResponse<>(false, null, errorCode.name(), errorCode.getMessage());
+        return new ApiResponse<>(false, null, errorCode.getCode(), errorCode.getMessage());
     }
 
     public static ApiResponse<Void> failure(ErrorCode errorCode, String customMessage) {
-        return new ApiResponse<>(false, null, errorCode.name(), customMessage);
+        return new ApiResponse<>(false, null, errorCode.getCode(), customMessage);
     }
 }
