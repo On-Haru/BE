@@ -52,7 +52,7 @@ public class TakingLog {
     }
 
     public static TakingLog create(MedicineSchedule schedule, LocalDateTime scheduledDateTime,
-            LocalDateTime takenDateTime, boolean taken, Integer delayMinutes) {
+            LocalDateTime takenDateTime, Integer delayMinutes) {
         return new TakingLog(schedule, scheduledDateTime, takenDateTime, false, delayMinutes);
     }
 
