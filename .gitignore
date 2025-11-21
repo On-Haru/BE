@@ -35,3 +35,8 @@ out/
 
 ### VS Code ###
 .vscode/
+
+# Environment overrides
+.env.local
+.env.dev
+.env

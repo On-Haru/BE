@@ -1,3 +1,43 @@
 spring:
+  port: ${SPRING_PORT}
+
+  config:
+    import: optional:file:${ENV_FILE:.env}[.properties]
+
   application:
-    name: onharu
+    name: OnHaru
+
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: 15
+      minimum-idle: 15
+
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 5MB
+
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        hibernate.highlight_sql: true
+        hibernate.session.events.log.LOG_QUERIES_SLOWER_THAN_MS: 100
+
+jwt:
+  secret: ${JWT_SECRET:onharu-secret-key-for-development-only-please-change-in-production}
+  expiration: ${JWT_EXPIRATION:86400000}
+
+push:
+  vapid:
+    subject: "mailto:admin@onharu.com"
+    public-key: ${PUBLIC_VAPID_KEY}
+    private-key: ${PRIVATE_VAPID_KEY}

@@ -1,0 +1,46 @@
+version: "3.9"
+
+services:
+  onharu-db:
+    image: mysql:8.0
+    container_name: onharu-db
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    command: [ "--port=${DB_PORT}", "--max_allowed_packet=32M" ]
+    healthcheck:
+      test: [ "CMD-SHELL", "mysqladmin ping -h localhost -p${DB_PASSWORD}" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    ports:
+      - ${DB_PORT}:${DB_PORT}
+    volumes:
+      - onharu-db:/var/lib/mysql
+    networks:
+      - onharu-bridge
+    restart: unless-stopped
+
+  onharu-app:
+    build:
+      context: .
+    container_name: onharu-app
+    depends_on:
+      onharu-db:
+        condition: service_healthy
+    env_file:
+      - ${ENV_FILE}
+    ports:
+      - ${SPRING_PORT}:${SPRING_PORT}
+    networks:
+      - onharu-bridge
+    restart: unless-stopped
+
+volumes:
+  onharu-db:
+
+networks:
+  onharu-bridge:
+    driver: bridge
