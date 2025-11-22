@@ -15,16 +15,18 @@ public record ReportPayload(
 ) {
 
     public static ReportPayload createBase(LocalDate startDate, LocalDate endDate,
-            ReportPeriodType periodType, String title,
+            ReportPeriodType periodType, String title, String userName, String userYear,
             int overallRate, ComparisonRate comparisonRate,
             Integer averageDelayMinutes, Integer missedCount,
             List<ChartData.TimePatternEntry> timePatterns,
-            List<ChartData.MedicinePatternEntry> medicinePatterns) {
-        ReportMeta meta = new ReportMeta(null, title, periodType, formatRange(startDate, endDate));
+            List<ChartData.MedicinePatternEntry> medicinePatterns,
+            ChartData.DelayStatistics delayStatistics) {
+        ReportMeta meta = new ReportMeta(null, title, periodType, formatRange(startDate, endDate),
+                userName, userYear);
         AiAnalysis ai = new AiAnalysis("", null, Collections.emptyList());
         Statistics stats = new Statistics(overallRate, comparisonRate, averageDelayMinutes,
                 missedCount);
-        ChartData chart = new ChartData(timePatterns, medicinePatterns);
+        ChartData chart = new ChartData(timePatterns, medicinePatterns, delayStatistics);
         return new ReportPayload(meta, ai, stats, chart);
     }
 
@@ -35,7 +37,7 @@ public record ReportPayload(
 
     public ReportPayload withReportId(Long reportId) {
         ReportMeta meta = new ReportMeta(reportId, reportMeta.title(), reportMeta.periodType(),
-                reportMeta.dateRange());
+                reportMeta.dateRange(), reportMeta.userName(), reportMeta.userYear());
         return new ReportPayload(meta, aiAnalysis, statistics, chartData);
     }
 
@@ -53,7 +55,7 @@ public record ReportPayload(
                                         entry.aiComment())
                 ))
                 .toList();
-        ChartData chart = new ChartData(chartData.timePattern(), updated);
+        ChartData chart = new ChartData(chartData.timePattern(), updated, chartData.delayStatistics());
         return new ReportPayload(reportMeta, ai, statistics, chart);
     }
 
@@ -66,7 +68,9 @@ public record ReportPayload(
             Long reportId,
             String title,
             ReportPeriodType periodType,
-            String dateRange
+            String dateRange,
+            String userName,
+            String userYear
     ) {
 
     }
@@ -97,7 +101,8 @@ public record ReportPayload(
 
     public record ChartData(
             List<TimePatternEntry> timePattern,
-            List<MedicinePatternEntry> medicinePattern
+            List<MedicinePatternEntry> medicinePattern,
+            DelayStatistics delayStatistics
     ) {
 
         public enum Status {
@@ -109,7 +114,8 @@ public record ReportPayload(
         public record TimePatternEntry(
                 String label,
                 int rate,
-                Status status
+                Status status,
+                Integer averageDelayMinutes
         ) {
 
         }
@@ -118,6 +124,13 @@ public record ReportPayload(
                 String medicineName,
                 int rate,
                 String aiComment
+        ) {
+
+        }
+
+        public record DelayStatistics(
+                int withinFiveMinutesRate,
+                int overThirtyMinutesRate
         ) {
 
         }

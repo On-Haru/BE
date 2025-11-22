@@ -52,6 +52,7 @@ public class StatisticsService {
 
         List<TimePatternEntry> timePatterns = buildTimePatterns(logs);
         List<MedicinePatternEntry> medicinePatterns = buildMedicinePatterns(logs);
+        ReportPayload.ChartData.DelayStatistics delayStatistics = buildDelayStatistics(logs);
 
         ReportPeriodType periodType = determinePeriodType(logs);
         String title = String.format("%s %d년 %02d월 복약 리포트", senior.getName(),
@@ -62,12 +63,15 @@ public class StatisticsService {
                 endDate,
                 periodType,
                 title,
+                senior.getName(),
+                senior.getYear(),
                 overallRate,
                 comparisonRate,
                 avgDelay,
                 missedCount,
                 timePatterns,
-                medicinePatterns
+                medicinePatterns,
+                delayStatistics
         );
     }
 
@@ -86,9 +90,11 @@ public class StatisticsService {
     }
 
     private TimePatternEntry buildTimeEntry(String label, List<TakingLog> logs) {
-        int rate = percentTaken(logs);
+        List<TakingLog> safeLogs = logs == null ? List.of() : logs;
+        int rate = percentTaken(safeLogs);
         Status status = statusForRate(rate);
-        return new TimePatternEntry(label, rate, status);
+        Integer averageDelay = averageDelay(safeLogs);
+        return new TimePatternEntry(label, rate, status, averageDelay);
     }
 
     private Status statusForRate(int rate) {
@@ -164,6 +170,24 @@ public class StatisticsService {
         }
         double average = delays.stream().mapToInt(Integer::intValue).average().orElse(0);
         return (int) Math.round(average);
+    }
+
+    private ReportPayload.ChartData.DelayStatistics buildDelayStatistics(List<TakingLog> logs) {
+        List<Integer> delays = logs.stream()
+                .filter(TakingLog::isTaken)
+                .map(TakingLog::getDelayMinutes)
+                .filter(value -> value != null && value >= 0)
+                .toList();
+        if (delays.isEmpty()) {
+            return new ReportPayload.ChartData.DelayStatistics(0, 0);
+        }
+        int denominator = delays.size();
+        long withinFiveCount = delays.stream().filter(value -> value <= 5).count();
+        long overThirtyCount = delays.stream().filter(value -> value >= 30).count();
+        return new ReportPayload.ChartData.DelayStatistics(
+                percent((int) withinFiveCount, denominator),
+                percent((int) overThirtyCount, denominator)
+        );
     }
 
     private int percentTaken(List<TakingLog> logs) {
