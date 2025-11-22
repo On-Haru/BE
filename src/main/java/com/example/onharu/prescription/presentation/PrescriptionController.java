@@ -16,7 +16,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/prescriptions")
@@ -32,11 +34,13 @@ public class PrescriptionController {
                 PrescriptionRequest.toCommand(request));
         return ApiResponseFactory.success(PrescriptionResponse.from(result));
     }
-//
-//    @PostMapping(value = "/upload", consumes = {"multipart/form-data"})
-//    public ApiResponse<?> upload(@RequestPart("image") MultipartFile image) {
-//        prescriptionService.processPrescriptionImage(image);
-//    }
+
+    @PostMapping(value = "/upload", consumes = {"multipart/form-data"})
+    public ApiResponse<PrescriptionResponse> upload(@RequestPart("image") MultipartFile image) {
+        return ApiResponseFactory.success(
+                PrescriptionResponse.fromOcrDraft(prescriptionService.processPrescriptionImage(image))
+        );
+    }
 
     @GetMapping("/{prescriptionId}")
     public ApiResponse<PrescriptionResponse> get(@PathVariable Long prescriptionId) {

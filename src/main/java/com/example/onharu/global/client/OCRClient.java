@@ -1,8 +1,6 @@
 package com.example.onharu.global.client;
 
 import com.example.onharu.global.util.MultipartInputStreamFileResource;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -32,16 +30,22 @@ public class OCRClient {
             headers.set("X-OCR-SECRET", secretKey);
             headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 
-            MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-            body.add("message", getRequestPayload());
-            body.add("file", new MultipartInputStreamFileResource(image));
+            MultiValueMap<String, Object> multipartBody = new LinkedMultiValueMap<>();
+            multipartBody.add("message", getRequestPayload());
+            multipartBody.add("file", new MultipartInputStreamFileResource(image));
 
-            HttpEntity<MultiValueMap<String, Object>> request = new HttpEntity<>(body, headers);
+            HttpEntity<MultiValueMap<String, Object>> request = new HttpEntity<>(multipartBody,
+                    headers);
 
             ResponseEntity<String> response = restTemplate.postForEntity(ocrUrl, request,
                     String.class);
 
-            return parseInferTexts(response.getBody()); // inferText만 이어붙이기
+            String responseBody = response.getBody();
+            if (responseBody == null || responseBody.isBlank()) {
+                throw new RuntimeException("OCR 응답이 비어 있습니다.");
+            }
+
+            return responseBody;
 
         } catch (Exception e) {
             throw new RuntimeException("OCR 호출 실패: " + e.getMessage());
@@ -58,18 +62,4 @@ public class OCRClient {
                 }
                 """;
     }
-
-    private String parseInferTexts(String json) throws Exception {
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode root = mapper.readTree(json);
-
-        StringBuilder sb = new StringBuilder();
-
-        for (JsonNode field : root.path("images").get(0).path("fields")) {
-            sb.append(field.path("inferText").asText()).append(" ");
-        }
-
-        return sb.toString().trim();
-    }
-
 }
