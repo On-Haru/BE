@@ -14,6 +14,7 @@ import com.example.onharu.user.domain.UserRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.util.Collections;
 import java.util.List;
@@ -38,8 +39,13 @@ public class ReportService {
 
     public Optional<ReportPayload> getReport(Long seniorId, YearMonth month) {
         return reportRepository.findBySeniorIdAndReportDate(seniorId, month.atDay(1))
-                .flatMap(report -> readPayload(report)
-                        .map(payload -> payload.withReportId(report.getId())))
+                .flatMap(report -> {
+                    if (needsRefresh(report)) {
+                        return generateAndSaveReport(seniorId, month);
+                    }
+                    return readPayload(report)
+                            .map(payload -> payload.withReportId(report.getId()));
+                })
                 .or(() -> generateAndSaveReport(seniorId, month));
     }
 
@@ -97,5 +103,10 @@ public class ReportService {
                 .orElseGet(() -> Report.create(seniorId, reportDate,
                         payload.reportMeta().periodType(), json));
         return reportRepository.save(report);
+    }
+
+    private boolean needsRefresh(Report report) {
+        LocalDateTime refreshedThreshold = LocalDateTime.now().minusDays(1);
+        return report.getCreatedAt().isBefore(refreshedThreshold);
     }
 }
