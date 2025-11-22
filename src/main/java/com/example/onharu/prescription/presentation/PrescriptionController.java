@@ -25,13 +25,18 @@ public class PrescriptionController {
 
     private final PrescriptionService prescriptionService;
 
-    @PostMapping
+    @PostMapping()
     public ApiResponse<PrescriptionResponse> create(
             @Valid @RequestBody PrescriptionRequest request) {
         PrescriptionResult result = prescriptionService.createPrescription(
                 PrescriptionRequest.toCommand(request));
         return ApiResponseFactory.success(PrescriptionResponse.from(result));
     }
+//
+//    @PostMapping(value = "/upload", consumes = {"multipart/form-data"})
+//    public ApiResponse<?> upload(@RequestPart("image") MultipartFile image) {
+//        prescriptionService.processPrescriptionImage(image);
+//    }
 
     @GetMapping("/{prescriptionId}")
     public ApiResponse<PrescriptionResponse> get(@PathVariable Long prescriptionId) {

@@ -17,6 +17,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -54,14 +55,7 @@ public class PrescriptionService {
     }
 
     public List<PrescriptionDetailResult> getPrescriptionHistory(Long seniorId) {
-        User senior = userRepository.findById(seniorId)
-                .filter(user -> user.getRole() == UserRole.SENIOR)
-                .orElseThrow(() -> new BusinessException(ErrorCode.CARE_RECEIVER_NOT_FOUND));
-
-        return prescriptionRepository.findAllBySeniorIdOrderByIssuedDateDesc(senior.getId())
-                .stream()
-                .map(this::buildDetail)
-                .toList();
+        return null;
     }
 
     private PrescriptionDetailResult buildDetail(Prescription prescription) {
@@ -94,5 +88,8 @@ public class PrescriptionService {
                 medicine.getAiDescription(),
                 schedules
         );
+    }
+
+    public void processPrescriptionImage(MultipartFile image) {
     }
 }

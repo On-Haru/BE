@@ -60,5 +60,5 @@ scheduler:
 
 naver:
   ocr:
-    api-url: ${NAVER_OCR_URL}
-    secret-key: ${NAVER_OCR_KEY}
+    url: ${NAVER_OCR_URL}
+    secret: ${NAVER_OCR_SECRET}
