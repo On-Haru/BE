@@ -5,6 +5,7 @@ import com.example.onharu.report.application.dto.AiRequest;
 import com.example.onharu.report.application.dto.AiResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.annotation.PostConstruct;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +24,18 @@ public class SpringAiClient implements AiClient {
 
     private final ChatClient chatClient;
     private final ObjectMapper objectMapper;
+
+    @PostConstruct
+    public void logHealthCheck() {
+        try {
+            chatClient.prompt()
+                    .user("health-check")
+                    .call();
+            log.info("Spring AI ChatClient health check succeeded.");
+        } catch (Exception ex) {
+            log.warn("Spring AI ChatClient health check failed: {}", ex.getMessage());
+        }
+    }
 
     @Override
     public AiResponse generate(AiRequest request) {
