@@ -43,7 +43,7 @@ public class CaregiverLinkController {
         return ApiResponseFactory.success(result);
     }
 
-    @GetMapping()
+    @GetMapping("/senior-list")
     public ApiResponse<?> getSeinorList(@LoginUser Long userId) {
         var result = caregiverLinkService.getSeniorList(userId);
         return ApiResponseFactory.success(result);
