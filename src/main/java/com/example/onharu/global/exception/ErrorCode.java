@@ -21,6 +21,7 @@ public enum ErrorCode {
     AUTH_TOKEN_REQUIRED("AU001", HttpStatus.UNAUTHORIZED, "인증 토큰이 필요합니다."),
     INVALID_AUTH_TOKEN("AU002", HttpStatus.UNAUTHORIZED, "유효하지 않은 토큰입니다."),
     PHONE_OR_CODE_MISMATCH("AU003", HttpStatus.BAD_REQUEST, "전화번호 또는 인증 코드가 일치하지 않습니다."),
+    INVALID_CREDENTIALS("AU004", HttpStatus.UNAUTHORIZED, "전화번호 또는 비밀번호가 올바르지 않습니다."),
     INTERNAL_SERVER_ERROR("GL001", HttpStatus.INTERNAL_SERVER_ERROR, "예상치 못한 서버 오류가 발생했습니다.");
 
     private final String code;

@@ -8,6 +8,7 @@ import com.example.onharu.global.exception.ErrorCode;
 import com.example.onharu.global.jwt.JwtProvider;
 import com.example.onharu.user.domain.User;
 import com.example.onharu.user.domain.UserRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +20,7 @@ public class AuthService {
 
     private final UserRepository userRepository;
     private final JwtProvider jwtProvider;
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional
     public AuthResult signup(SignupCommand command) {
@@ -26,12 +28,14 @@ public class AuthService {
             throw new BusinessException(ErrorCode.PHONE_ALREADY_REGISTERED);
         }
 
+        String encodedPassword = passwordEncoder.encode(command.getPassword());
+
         User user = User.create(
                 command.getName(),
                 command.getPhone(),
                 command.getRole(),
                 command.getYear(),
-                command.getPassword()
+                encodedPassword
         );
 
         user.generateCode();
@@ -42,9 +46,12 @@ public class AuthService {
 
     @Transactional
     public AuthResult login(LoginCommand command) {
-        //TODO: 비밀번호 인증 로직
         User user = userRepository.findByPhone(command.getPhone())
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+
+        if (!passwordEncoder.matches(command.getPassword(), user.getPassword())) {
+            throw new BusinessException(ErrorCode.INVALID_CREDENTIALS);
+        }
 
         String token = jwtProvider.generateToken(
                 user.getId(),
