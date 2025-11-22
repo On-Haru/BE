@@ -1,4 +1,4 @@
-package com.example.onharu.report.application.dto;
+package com.example.onharu.global.client.ai.dto;
 
 import com.example.onharu.report.domain.ReportPeriodType;
 import java.time.LocalDate;
@@ -28,6 +28,11 @@ public record ReportPayload(
         return new ReportPayload(meta, ai, stats, chart);
     }
 
+    private static String formatRange(LocalDate start, LocalDate end) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd");
+        return formatter.format(start) + " ~ " + formatter.format(end);
+    }
+
     public ReportPayload withReportId(Long reportId) {
         ReportMeta meta = new ReportMeta(reportId, reportMeta.title(), reportMeta.periodType(),
                 reportMeta.dateRange());
@@ -36,7 +41,8 @@ public record ReportPayload(
 
     public ReportPayload withAiInsights(String summary, String suggestion, List<String> riskTags,
             Map<String, String> medicineComments) {
-        AiAnalysis ai = new AiAnalysis(summary, suggestion, riskTags == null ? List.of() : riskTags);
+        AiAnalysis ai = new AiAnalysis(summary, suggestion,
+                riskTags == null ? List.of() : riskTags);
         List<ChartData.MedicinePatternEntry> updated = chartData.medicinePattern().stream()
                 .map(entry -> new ChartData.MedicinePatternEntry(
                         entry.medicineName(),
@@ -51,9 +57,9 @@ public record ReportPayload(
         return new ReportPayload(reportMeta, ai, statistics, chart);
     }
 
-    private static String formatRange(LocalDate start, LocalDate end) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd");
-        return formatter.format(start) + " ~ " + formatter.format(end);
+    public enum Direction {
+        UP,
+        DOWN
     }
 
     public record ReportMeta(
@@ -62,6 +68,7 @@ public record ReportPayload(
             ReportPeriodType periodType,
             String dateRange
     ) {
+
     }
 
     public record AiAnalysis(
@@ -69,6 +76,7 @@ public record ReportPayload(
             String suggestion,
             List<String> riskTags
     ) {
+
     }
 
     public record Statistics(
@@ -77,17 +85,14 @@ public record ReportPayload(
             Integer averageDelayMinutes,
             Integer missedCount
     ) {
+
     }
 
     public record ComparisonRate(
             int diff,
             Direction direction
     ) {
-    }
 
-    public enum Direction {
-        UP,
-        DOWN
     }
 
     public record ChartData(
@@ -95,11 +100,18 @@ public record ReportPayload(
             List<MedicinePatternEntry> medicinePattern
     ) {
 
+        public enum Status {
+            GOOD,
+            WARN,
+            BAD
+        }
+
         public record TimePatternEntry(
                 String label,
                 int rate,
                 Status status
         ) {
+
         }
 
         public record MedicinePatternEntry(
@@ -107,12 +119,7 @@ public record ReportPayload(
                 int rate,
                 String aiComment
         ) {
-        }
 
-        public enum Status {
-            GOOD,
-            WARN,
-            BAD
         }
     }
 }

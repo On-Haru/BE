@@ -2,8 +2,8 @@ package com.example.onharu.report.presentation;
 
 import com.example.onharu.global.api.ApiResponse;
 import com.example.onharu.global.api.ApiResponseFactory;
+import com.example.onharu.global.client.ai.dto.ReportPayload;
 import com.example.onharu.report.application.ReportService;
-import com.example.onharu.report.application.dto.ReportPayload;
 import java.time.YearMonth;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;

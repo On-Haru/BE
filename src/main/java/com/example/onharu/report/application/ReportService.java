@@ -1,15 +1,18 @@
 package com.example.onharu.report.application;
 
+import com.example.onharu.global.client.ai.AiClient;
+import com.example.onharu.global.client.ai.dto.AiRequest;
+import com.example.onharu.global.client.ai.dto.AiResponse;
+import com.example.onharu.global.client.ai.dto.ReportPayload;
+import com.example.onharu.report.application.ai.ReportAiScenario;
 import com.example.onharu.global.exception.BusinessException;
 import com.example.onharu.global.exception.ErrorCode;
-import com.example.onharu.report.application.dto.AiRequest;
-import com.example.onharu.report.application.dto.AiResponse;
-import com.example.onharu.report.application.dto.ReportPayload;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.example.onharu.report.domain.Report;
 import com.example.onharu.report.domain.ReportRepository;
 import com.example.onharu.user.domain.User;
 import com.example.onharu.user.domain.UserRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.Collections;
@@ -19,7 +22,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +34,7 @@ public class ReportService {
     private final ReportRepository reportRepository;
     private final ObjectMapper objectMapper;
     private final UserRepository userRepository;
+    private final ReportAiScenario reportAiScenario;
 
     public Optional<ReportPayload> getReport(Long seniorId, YearMonth month) {
         return reportRepository.findBySeniorIdAndReportDate(seniorId, month.atDay(1))
@@ -46,7 +49,8 @@ public class ReportService {
 
         ReportPayload basePayload = statisticsService.buildPayload(senior, month);
         String prompt = promptManager.buildPrompt(basePayload, month);
-        AiResponse aiResponse = aiClient.generate(new AiRequest(prompt, basePayload, month));
+        AiResponse aiResponse = aiClient.execute(reportAiScenario,
+                new AiRequest(prompt, basePayload, month));
 
         String summary = aiResponse.summary() != null
                 ? aiResponse.summary()

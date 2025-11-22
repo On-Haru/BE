@@ -57,3 +57,8 @@ scheduler:
   medicine-alarm:
     cron: "${CRON_EXPRESSION}"
     enabled: true
+
+naver:
+  ocr:
+    api-url: ${NAVER_OCR_URL}
+    secret-key: ${NAVER_OCR_KEY}

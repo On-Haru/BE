@@ -1,13 +1,12 @@
 package com.example.onharu.report.application;
 
+import com.example.onharu.global.client.ai.dto.ReportPayload;
+import com.example.onharu.global.client.ai.dto.ReportPayload.ChartData.MedicinePatternEntry;
+import com.example.onharu.global.client.ai.dto.ReportPayload.ChartData.Status;
+import com.example.onharu.global.client.ai.dto.ReportPayload.ChartData.TimePatternEntry;
+import com.example.onharu.global.client.ai.dto.ReportPayload.ComparisonRate;
+import com.example.onharu.global.client.ai.dto.ReportPayload.Direction;
 import com.example.onharu.medicineschedule.domain.ScheduleType;
-import com.example.onharu.report.application.dto.ReportPayload;
-import com.example.onharu.report.application.dto.ReportPayload.ChartData;
-import com.example.onharu.report.application.dto.ReportPayload.ChartData.MedicinePatternEntry;
-import com.example.onharu.report.application.dto.ReportPayload.ChartData.Status;
-import com.example.onharu.report.application.dto.ReportPayload.ChartData.TimePatternEntry;
-import com.example.onharu.report.application.dto.ReportPayload.ComparisonRate;
-import com.example.onharu.report.application.dto.ReportPayload.Direction;
 import com.example.onharu.report.domain.ReportPeriodType;
 import com.example.onharu.takinglog.domain.TakingLog;
 import com.example.onharu.takinglog.domain.TakingLogRepository;
@@ -46,7 +45,8 @@ public class StatisticsService {
         int takenCount = (int) logs.stream().filter(TakingLog::isTaken).count();
         int overallRate = percent(takenCount, totalCount);
 
-        ComparisonRate comparisonRate = buildComparisonRate(senior.getId(), targetMonth, overallRate);
+        ComparisonRate comparisonRate = buildComparisonRate(senior.getId(), targetMonth,
+                overallRate);
         Integer avgDelay = averageDelay(logs);
         Integer missedCount = totalCount == 0 ? null : totalCount - takenCount;
 
@@ -119,7 +119,8 @@ public class StatisticsService {
                 .toList();
     }
 
-    private ComparisonRate buildComparisonRate(Long seniorId, YearMonth targetMonth, int currentRate) {
+    private ComparisonRate buildComparisonRate(Long seniorId, YearMonth targetMonth,
+            int currentRate) {
         YearMonth previous = targetMonth.minusMonths(1);
         LocalDateTime prevStart = previous.atDay(1).atStartOfDay();
         LocalDateTime prevEnd = previous.plusMonths(1).atDay(1).atStartOfDay();

@@ -1,6 +1,6 @@
 package com.example.onharu.report.application;
 
-import com.example.onharu.report.application.dto.ReportPayload;
+import com.example.onharu.global.client.ai.dto.ReportPayload;
 import java.time.YearMonth;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;

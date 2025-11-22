@@ -1,4 +1,4 @@
-package com.example.onharu.report.application.dto;
+package com.example.onharu.global.client.ai.dto;
 
 import java.util.List;
 import java.util.Map;
@@ -9,4 +9,5 @@ public record AiResponse(
         List<String> riskTags,
         Map<String, String> medicineComments
 ) {
+
 }
