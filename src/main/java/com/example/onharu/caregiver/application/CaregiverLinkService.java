@@ -49,6 +49,18 @@ public class CaregiverLinkService {
                 .toList();
     }
 
+    @Transactional
+    public void unlink(Long caregiverId, Long linkId) {
+        CaregiverLink link = caregiverLinkRepository.findById(linkId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.CARE_RECEIVER_NOT_FOUND));
+
+        if (!link.getCaregiver().getId().equals(caregiverId)) {
+            throw new BusinessException(ErrorCode.CARE_LINK_ACCESS_DENIED);
+        }
+
+        caregiverLinkRepository.delete(link);
+    }
+
     private User isValidSeniorCode(String phone, int code) {
         return userRepository.findByPhoneAndCode(phone, code)
                 .filter(User::isSenior)

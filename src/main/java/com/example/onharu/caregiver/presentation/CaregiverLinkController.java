@@ -9,6 +9,7 @@ import com.example.onharu.global.api.ApiResponseFactory;
 import com.example.onharu.global.jwt.LoginUser;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -40,5 +41,11 @@ public class CaregiverLinkController {
     public ApiResponse<?> getSeinorList(@LoginUser Long userId) {
         var result = caregiverLinkService.getSeniorList(userId);
         return ApiResponseFactory.success(result);
+    }
+
+    @DeleteMapping("/{linkId}")
+    public ApiResponse<Void> unlink(@LoginUser Long userId, @PathVariable Long linkId) {
+        caregiverLinkService.unlink(userId, linkId);
+        return ApiResponseFactory.success(null);
     }
 }
