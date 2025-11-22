@@ -46,3 +46,21 @@ scheduler:
   medicine-alarm:
     cron: "${CRON_EXPRESSION}"
     enabled: true
+
+  ai:
+    openai:
+      api-key: ${OPENAI_API_KEY}
+      chat:
+        base-url: ${OPENAI_BASE_URL}
+        options:
+          model: ${OPENAI_MODEL}
+          temperature: ${OPENAI_TEMPERATURE:0.0}
+          max-tokens: ${OPENAI_MAX_TOKENS:1024}
+        embedding:
+          api-key: ${OPENAI_API_KEY}
+ai:
+  client:
+    enabled: false
+    base-url: ""
+    api-key: ""
+    timeout: 10s
