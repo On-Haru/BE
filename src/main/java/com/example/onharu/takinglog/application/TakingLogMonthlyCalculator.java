@@ -4,11 +4,9 @@ import com.example.onharu.takinglog.application.dto.TakingLogMonthlyResponse;
 import com.example.onharu.takinglog.application.dto.TakingLogMonthlyResponse.DayStatus;
 import com.example.onharu.takinglog.application.dto.TakingLogMonthlyResponse.DaySummary;
 import com.example.onharu.takinglog.application.dto.TakingLogMonthlyResponse.SlotSummary;
-import com.example.onharu.takinglog.application.dto.TakingLogSlotDto;
 import com.example.onharu.takinglog.domain.TakingLog;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.YearMonth;
 import java.util.Comparator;
 import java.util.List;
@@ -37,7 +35,7 @@ public class TakingLogMonthlyCalculator {
         return new TakingLogMonthlyResponse(
                 yearMonth.getYear(),
                 yearMonth.getMonthValue(),
-                ZoneId.systemDefault().getId(),
+                TakingLogMonthlyResponse.defaultTimezone(),
                 days
         );
     }
@@ -78,16 +76,16 @@ public class TakingLogMonthlyCalculator {
     }
 
     private SlotSummary toSlotSummary(TakingLog log) {
-        TakingLogSlotDto dto = TakingLogSlotDto.from(log);
+        var schedule = log.getSchedule();
         return new SlotSummary(
-                dto.id(),
-                dto.scheduleId(),
-                dto.medicineName(),
-                dto.scheduleType(),
-                dto.scheduledDateTime(),
-                dto.taken(),
-                dto.takenDateTime(),
-                dto.delayMinutes()
+                log.getId(),
+                schedule.getId(),
+                schedule.getMedicine().getName(),
+                schedule.getScheduleType(),
+                log.getScheduledDateTime(),
+                log.isTaken(),
+                log.getTakenDateTime(),
+                log.getDelayMinutes()
         );
     }
 }

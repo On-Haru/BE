@@ -3,7 +3,6 @@ package com.example.onharu.takinglog.application.dto;
 import com.example.onharu.medicineschedule.domain.ScheduleType;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.List;
 
 public record TakingLogMonthlyResponse(
@@ -13,8 +12,14 @@ public record TakingLogMonthlyResponse(
         List<DaySummary> days
 ) {
 
+    private static final String DEFAULT_TIMEZONE = "Asia/Seoul";
+
     public static TakingLogMonthlyResponse empty(int year, int month) {
-        return new TakingLogMonthlyResponse(year, month, ZoneId.systemDefault().getId(), List.of());
+        return new TakingLogMonthlyResponse(year, month, DEFAULT_TIMEZONE, List.of());
+    }
+
+    public static String defaultTimezone() {
+        return DEFAULT_TIMEZONE;
     }
 
     public record DaySummary(
