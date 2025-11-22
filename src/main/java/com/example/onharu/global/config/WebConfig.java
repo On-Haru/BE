@@ -50,7 +50,7 @@ public class WebConfig implements WebMvcConfigurer {
     public CorsFilter corsFilter() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowCredentials(true);
-        configuration.setAllowedOrigins(List.of("http://localhost:5173"));
+        configuration.setAllowedOrigins(List.of("http://localhost:5173", "https://onharu.my"));
         configuration.addAllowedHeader("*");
         configuration.addAllowedMethod("*");
 
