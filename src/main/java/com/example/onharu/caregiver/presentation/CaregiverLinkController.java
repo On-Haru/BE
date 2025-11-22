@@ -38,7 +38,7 @@ public class CaregiverLinkController {
     }
 
     @GetMapping()
-    public ApiResponse<?> hasLink(@LoginUser Long userId) {
+    public ApiResponse<Boolean> hasLink(@LoginUser Long userId) {
         boolean result = caregiverLinkService.hasLink(userId);
         return ApiResponseFactory.success(result);
     }
