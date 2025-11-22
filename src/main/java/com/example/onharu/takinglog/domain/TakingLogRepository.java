@@ -18,4 +18,5 @@ public interface TakingLogRepository {
     List<TakingLog> findBySeniorIdAndScheduledDateBetween(Long seniorId,
             LocalDateTime startInclusive,
             LocalDateTime endExclusive);
+
 }
