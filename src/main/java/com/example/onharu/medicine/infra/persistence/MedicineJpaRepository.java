@@ -8,4 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface MedicineJpaRepository extends JpaRepository<Medicine, Long>, MedicineRepository {
 
     List<Medicine> findByPrescriptionId(Long prescriptionId);
+
+    void deleteAllByPrescriptionId(Long prescriptionId);
 }

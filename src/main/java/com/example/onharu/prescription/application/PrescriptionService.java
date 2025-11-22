@@ -62,6 +62,24 @@ public class PrescriptionService {
         return buildDetail(prescription);
     }
 
+    @Transactional
+    public void deletePrescription(Long prescriptionId) {
+        Prescription prescription = prescriptionRepository.findById(prescriptionId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.PRESCRIPTION_NOT_FOUND));
+
+        List<Medicine> medicines = medicineRepository.findByPrescriptionId(prescriptionId);
+        List<Long> medicineIds = medicines.stream()
+                .map(Medicine::getId)
+                .toList();
+
+        if (!medicineIds.isEmpty()) {
+            medicineScheduleRepository.deleteByMedicineIdIn(medicineIds);
+            medicineRepository.deleteAllByPrescriptionId(prescriptionId);
+        }
+
+        prescriptionRepository.delete(prescription);
+    }
+
     public List<PrescriptionDetailResult> getPrescriptionHistory(Long seniorId) {
         User senior = userRepository.findById(seniorId)
                 .filter(user -> user.getRole() == UserRole.SENIOR)

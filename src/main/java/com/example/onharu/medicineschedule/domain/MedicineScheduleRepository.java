@@ -14,4 +14,6 @@ public interface MedicineScheduleRepository {
     List<MedicineSchedule> findByMedicineId(Long medicineId);
 
     List<MedicineSchedule> findDueSchedules(LocalTime notifyTime, LocalDate today);
+
+    void deleteByMedicineIdIn(List<Long> medicineIds);
 }

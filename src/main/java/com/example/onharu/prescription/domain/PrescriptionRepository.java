@@ -10,4 +10,6 @@ public interface PrescriptionRepository {
     Optional<Prescription> findById(Long id);
 
     List<Prescription> findAllBySeniorIdOrderByIssuedDateDesc(Long seniorId);
+
+    void delete(Prescription prescription);
 }

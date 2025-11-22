@@ -62,3 +62,8 @@ naver:
   ocr:
     url: ${NAVER_OCR_URL}
     secret: ${NAVER_OCR_SECRET}
+
+logging:
+  level:
+    root: INFO
+    com.example.onharu: DEBUG

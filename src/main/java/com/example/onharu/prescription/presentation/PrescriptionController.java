@@ -10,6 +10,7 @@ import com.example.onharu.prescription.presentation.dto.PrescriptionResponse;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -55,5 +56,11 @@ public class PrescriptionController {
                 .map(PrescriptionResponse::fromDetail)
                 .toList();
         return ApiResponseFactory.success(responses);
+    }
+
+    @DeleteMapping("/{prescriptionId}")
+    public ApiResponse<Void> delete(@PathVariable Long prescriptionId) {
+        prescriptionService.deletePrescription(prescriptionId);
+        return ApiResponseFactory.success();
     }
 }

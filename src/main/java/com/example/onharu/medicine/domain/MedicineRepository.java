@@ -10,4 +10,6 @@ public interface MedicineRepository {
     Optional<Medicine> findById(Long id);
 
     List<Medicine> findByPrescriptionId(Long prescriptionId);
+
+    void deleteAllByPrescriptionId(Long prescriptionId);
 }
