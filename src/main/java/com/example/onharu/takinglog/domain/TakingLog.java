@@ -52,8 +52,8 @@ public class TakingLog {
     }
 
     public static TakingLog create(MedicineSchedule schedule, LocalDateTime scheduledDateTime,
-            LocalDateTime takenDateTime, Integer delayMinutes) {
-        return new TakingLog(schedule, scheduledDateTime, takenDateTime, false, delayMinutes);
+            LocalDateTime takenDateTime, Boolean taken, Integer delayMinutes) {
+        return new TakingLog(schedule, scheduledDateTime, takenDateTime, taken, delayMinutes);
     }
 
     public static TakingLog testInstance(Long id, MedicineSchedule schedule) {

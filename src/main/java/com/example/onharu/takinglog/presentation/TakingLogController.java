@@ -3,6 +3,8 @@ package com.example.onharu.takinglog.presentation;
 import com.example.onharu.global.api.ApiResponse;
 import com.example.onharu.global.api.ApiResponseFactory;
 import com.example.onharu.takinglog.application.TakingLogService;
+import com.example.onharu.takinglog.application.dto.TakingLogMonthlyRequest;
+import com.example.onharu.takinglog.application.dto.TakingLogMonthlyResponse;
 import com.example.onharu.takinglog.presentation.dto.TakenRequest;
 import com.example.onharu.takinglog.presentation.dto.TakingLogCreateRequest;
 import com.example.onharu.takinglog.presentation.dto.TakingLogResponse;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -37,7 +40,18 @@ public class TakingLogController {
         return ApiResponseFactory.success();
     }
 
-    @GetMapping("/{logId}")
+    @GetMapping("/calendar")
+    public ApiResponse<TakingLogMonthlyResponse> getMonthlyCalendar(
+            @RequestParam int year,
+            @RequestParam int month,
+            @RequestParam Long userId
+    ) {
+        var request = TakingLogMonthlyRequest.of(userId, year, month);
+        var response = takingLogService.getMonthlyCalendar(request);
+        return ApiResponseFactory.success(response);
+    }
+
+    @GetMapping("/{logId:\\d+}")
     public ApiResponse<TakingLogResponse> get(@PathVariable Long logId) {
         var result = takingLogService.getLog(logId);
         return ApiResponseFactory.success(TakingLogResponse.from(result));
