@@ -38,6 +38,12 @@ public class CaregiverLinkController {
     }
 
     @GetMapping()
+    public ApiResponse<?> hasLink(@LoginUser Long userId) {
+        boolean result = caregiverLinkService.hasLink(userId);
+        return ApiResponseFactory.success(result);
+    }
+
+    @GetMapping()
     public ApiResponse<?> getSeinorList(@LoginUser Long userId) {
         var result = caregiverLinkService.getSeniorList(userId);
         return ApiResponseFactory.success(result);

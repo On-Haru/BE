@@ -14,4 +14,6 @@ public interface CaregiverLinkRepository {
     List<CaregiverLink> findAllByCaregiverId(Long caregiverId);
 
     void delete(CaregiverLink link);
+
+    boolean existsByCaregiverId(Long userId);
 }
