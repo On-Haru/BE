@@ -24,14 +24,13 @@ services:
     restart: unless-stopped
 
   onharu-app:
-    build:
-      context: .
+    image: bohyeong/onharu:latest
     container_name: onharu-app
     depends_on:
       onharu-db:
         condition: service_healthy
     env_file:
-      - ${ENV_FILE}
+      - .env
     ports:
       - ${SPRING_PORT}:${SPRING_PORT}
     networks:
