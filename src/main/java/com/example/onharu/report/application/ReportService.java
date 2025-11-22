@@ -5,13 +5,11 @@ import com.example.onharu.global.exception.ErrorCode;
 import com.example.onharu.report.application.dto.AiRequest;
 import com.example.onharu.report.application.dto.AiResponse;
 import com.example.onharu.report.application.dto.ReportPayload;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.example.onharu.report.domain.Report;
-import com.example.onharu.report.domain.ReportPeriodType;
 import com.example.onharu.report.domain.ReportRepository;
 import com.example.onharu.user.domain.User;
 import com.example.onharu.user.domain.UserRepository;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.Collections;
@@ -21,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 @RequiredArgsConstructor
@@ -66,9 +65,10 @@ public class ReportService {
 
     private Optional<ReportPayload> readPayload(Report report) {
         try {
-            return Optional.of(objectMapper.readValue(report.getJsonPayload(), ReportPayload.class));
+            return Optional.of(
+                    objectMapper.readValue(report.getJsonPayload(), ReportPayload.class));
         } catch (JsonProcessingException e) {
-            log.warn("Failed to parse report payload {}: {}", report.getId(), e.getMessage());
+            log.warn("리포트 페이로드 역직렬화 실패", e);
             return Optional.empty();
         }
     }
@@ -77,7 +77,7 @@ public class ReportService {
         try {
             return objectMapper.writeValueAsString(payload);
         } catch (JsonProcessingException e) {
-            throw new IllegalStateException("Failed to serialize report payload", e);
+            throw new IllegalStateException("리포트 페이로드 직렬화에 실패했습니다.", e);
         }
     }
 
