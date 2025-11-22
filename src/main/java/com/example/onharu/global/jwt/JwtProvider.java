@@ -4,12 +4,12 @@ import com.example.onharu.user.domain.UserRole;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import java.nio.charset.StandardCharsets;
+import java.time.Instant;
+import java.util.Date;
+import javax.crypto.SecretKey;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-
-import javax.crypto.SecretKey;
-import java.nio.charset.StandardCharsets;
-import java.util.Date;
 
 @Component
 @RequiredArgsConstructor
@@ -32,11 +32,7 @@ public class JwtProvider {
     }
 
     public JwtPayload parseToken(String token) {
-        Claims claims = Jwts.parser()
-                .verifyWith(getSigningKey())
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
+        Claims claims = parseClaims(token);
 
         Long userId = claims.get("userId", Long.class);
         UserRole role = UserRole.valueOf(claims.get("role", String.class));
@@ -57,8 +53,21 @@ public class JwtProvider {
         }
     }
 
+    public Instant getExpiration(String token) {
+        Claims claims = parseClaims(token);
+        return claims.getExpiration().toInstant();
+    }
+
     private SecretKey getSigningKey() {
         byte[] keyBytes = jwtProperties.getSecret().getBytes(StandardCharsets.UTF_8);
         return Keys.hmacShaKeyFor(keyBytes);
+    }
+
+    private Claims parseClaims(String token) {
+        return Jwts.parser()
+                .verifyWith(getSigningKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
     }
 }

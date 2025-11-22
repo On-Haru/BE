@@ -13,6 +13,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 public class JwtAuthenticationInterceptor implements HandlerInterceptor {
 
     private final JwtProvider jwtProvider;
+    private final LogoutTokenStore logoutTokenStore;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
@@ -28,6 +29,10 @@ public class JwtAuthenticationInterceptor implements HandlerInterceptor {
 
         if (!jwtProvider.validateToken(token)) {
             throw new BusinessException(ErrorCode.INVALID_AUTH_TOKEN);
+        }
+
+        if (logoutTokenStore.isRevoked(token)) {
+            throw new BusinessException(ErrorCode.TOKEN_REVOKED);
         }
 
         JwtPayload payload = jwtProvider.parseToken(token);

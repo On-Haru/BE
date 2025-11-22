@@ -6,6 +6,7 @@ import com.example.onharu.auth.application.dto.SignupCommand;
 import com.example.onharu.global.exception.BusinessException;
 import com.example.onharu.global.exception.ErrorCode;
 import com.example.onharu.global.jwt.JwtProvider;
+import com.example.onharu.global.jwt.LogoutTokenStore;
 import com.example.onharu.user.domain.User;
 import com.example.onharu.user.domain.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,6 +21,7 @@ public class AuthService {
 
     private final UserRepository userRepository;
     private final JwtProvider jwtProvider;
+    private final LogoutTokenStore logoutTokenStore;
     private final PasswordEncoder passwordEncoder;
 
     @Transactional
@@ -60,5 +62,15 @@ public class AuthService {
         );
 
         return AuthResult.of(user.getId(), token);
+    }
+
+    @Transactional
+    public void logout(String token) {
+        if (token == null || token.isBlank()) {
+            throw new BusinessException(ErrorCode.AUTH_TOKEN_REQUIRED);
+        }
+
+        var expiration = jwtProvider.getExpiration(token);
+        logoutTokenStore.revoke(token, expiration);
     }
 }
