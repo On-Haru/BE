@@ -2,8 +2,9 @@ package com.example.onharu.prescription.application;
 
 import com.example.onharu.global.exception.BusinessException;
 import com.example.onharu.global.exception.ErrorCode;
-import com.example.onharu.medicine.application.dto.MedicineResult;
+import com.example.onharu.medicine.domain.Medicine;
 import com.example.onharu.medicine.domain.MedicineRepository;
+import com.example.onharu.medicineschedule.domain.MedicineScheduleRepository;
 import com.example.onharu.prescription.application.dto.PrescriptionCreateCommand;
 import com.example.onharu.prescription.application.dto.PrescriptionDetailResult;
 import com.example.onharu.prescription.application.dto.PrescriptionResult;
@@ -25,6 +26,7 @@ public class PrescriptionService {
     private final PrescriptionRepository prescriptionRepository;
     private final PrescriptionMedicationService prescriptionMedicationService;
     private final MedicineRepository medicineRepository;
+    private final MedicineScheduleRepository medicineScheduleRepository;
     private final UserRepository userRepository;
 
     @Transactional
@@ -63,10 +65,34 @@ public class PrescriptionService {
     }
 
     private PrescriptionDetailResult buildDetail(Prescription prescription) {
-        List<MedicineResult> medicines = medicineRepository.findByPrescriptionId(prescription.getId())
+        List<PrescriptionDetailResult.MedicineDetail> medicines = medicineRepository.findByPrescriptionId(
+                        prescription.getId())
                 .stream()
-                .map(MedicineResult::from)
+                .map(this::toMedicineDetail)
                 .toList();
         return PrescriptionDetailResult.from(prescription, medicines);
+    }
+
+    private PrescriptionDetailResult.MedicineDetail toMedicineDetail(Medicine medicine) {
+        List<PrescriptionDetailResult.ScheduleDetail> schedules = medicineScheduleRepository.findByMedicineId(
+                        medicine.getId())
+                .stream()
+                .map(schedule -> new PrescriptionDetailResult.ScheduleDetail(
+                        schedule.getId(),
+                        schedule.getScheduleType(),
+                        schedule.getNotifyTime()
+                ))
+                .toList();
+        return new PrescriptionDetailResult.MedicineDetail(
+                medicine.getId(),
+                medicine.getPrescription().getId(),
+                medicine.getName(),
+                medicine.getDailyDoseCount(),
+                medicine.getTotalCount(),
+                medicine.getDurationDays(),
+                medicine.getMemo(),
+                medicine.getAiDescription(),
+                schedules
+        );
     }
 }

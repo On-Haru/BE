@@ -1,8 +1,9 @@
 package com.example.onharu.prescription.application.dto;
 
-import com.example.onharu.medicine.application.dto.MedicineResult;
+import com.example.onharu.medicineschedule.domain.ScheduleType;
 import com.example.onharu.prescription.domain.Prescription;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 public record PrescriptionDetailResult(
@@ -12,11 +13,11 @@ public record PrescriptionDetailResult(
         String hospitalName,
         String doctorName,
         String note,
-        List<MedicineResult> medicines
+        List<MedicineDetail> medicines
 ) {
 
     public static PrescriptionDetailResult from(Prescription prescription,
-            List<MedicineResult> medicines) {
+            List<MedicineDetail> medicines) {
         return new PrescriptionDetailResult(
                 prescription.getId(),
                 prescription.getSenior().getId(),
@@ -27,5 +28,24 @@ public record PrescriptionDetailResult(
                 List.copyOf(medicines)
         );
     }
-}
 
+    public record MedicineDetail(
+            Long id,
+            Long prescriptionId,
+            String name,
+            int dosage,
+            Integer totalCount,
+            Integer durationDays,
+            String memo,
+            String aiDescription,
+            List<ScheduleDetail> schedules
+    ) {
+    }
+
+    public record ScheduleDetail(
+            Long id,
+            ScheduleType timeTag,
+            LocalTime notifyTime
+    ) {
+    }
+}
