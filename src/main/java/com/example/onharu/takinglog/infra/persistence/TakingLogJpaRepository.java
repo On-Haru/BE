@@ -25,10 +25,12 @@ public interface TakingLogJpaRepository extends JpaRepository<TakingLog, Long>, 
             LocalDateTime startInclusive,
             LocalDateTime endExclusive);
 
+    @EntityGraph(attributePaths = {"schedule", "schedule.medicine", "schedule.medicine.prescription"})
     @Override
     default List<TakingLog> findBySeniorIdAndScheduledDateBetween(Long seniorId,
             LocalDateTime startInclusive, LocalDateTime endExclusive) {
         return findAllBySchedule_Medicine_Prescription_Senior_IdAndScheduledDateTimeGreaterThanEqualAndScheduledDateTimeLessThan(
                 seniorId, startInclusive, endExclusive);
     }
+
 }
