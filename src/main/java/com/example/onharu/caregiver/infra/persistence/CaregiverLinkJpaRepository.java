@@ -17,5 +17,5 @@ public interface CaregiverLinkJpaRepository
     @Query("SELECT cl FROM CaregiverLink cl WHERE cl.caregiver.id = :caregiverId")
     List<CaregiverLink> findAllByCaregiverId(@Param("caregiverId") Long caregiverId);
 
-    boolean existsByCaregiverId(Long caregiverId);
+    Boolean existsBySeniorId(Long seniorId);
 }

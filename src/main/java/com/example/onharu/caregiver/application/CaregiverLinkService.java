@@ -73,8 +73,8 @@ public class CaregiverLinkService {
             throw new BusinessException(ErrorCode.CAREGIVER_ALREADY_REGISTERED);
         }
     }
-    
-    public boolean hasLink(Long userId) {
-        return caregiverLinkRepository.existsByCaregiverId(userId);
+
+    public boolean hasSeniorLink(Long seniorId) {
+        return caregiverLinkRepository.existsBySeniorId(seniorId);
     }
 }

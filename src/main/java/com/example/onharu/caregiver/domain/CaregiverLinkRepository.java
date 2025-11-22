@@ -15,5 +15,5 @@ public interface CaregiverLinkRepository {
 
     void delete(CaregiverLink link);
 
-    boolean existsByCaregiverId(Long userId);
+    Boolean existsBySeniorId(Long seniorId);
 }
