@@ -4,10 +4,12 @@ import com.example.onharu.auth.application.AuthService;
 import com.example.onharu.auth.application.dto.AuthResult;
 import com.example.onharu.auth.presentation.dto.AuthResponse;
 import com.example.onharu.auth.presentation.dto.LoginRequest;
+import com.example.onharu.auth.presentation.dto.ResetPasswordRequest;
 import com.example.onharu.auth.presentation.dto.SignupRequest;
 import com.example.onharu.global.api.ApiResponseFactory;
 import com.example.onharu.global.exception.BusinessException;
 import com.example.onharu.global.exception.ErrorCode;
+import com.example.onharu.global.jwt.LoginUser;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -41,6 +43,13 @@ public class AuthController {
     String authorization) {
         String token = resolveBearer(authorization);
         authService.logout(token);
+        return ResponseEntity.ok(ApiResponseFactory.success(null));
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@LoginUser Long adminId,
+            @Valid @RequestBody ResetPasswordRequest request) {
+        authService.resetPassword(adminId, request.toCommand());
         return ResponseEntity.ok(ApiResponseFactory.success(null));
     }
 

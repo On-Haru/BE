@@ -2,6 +2,7 @@ package com.example.onharu.auth.application;
 
 import com.example.onharu.auth.application.dto.AuthResult;
 import com.example.onharu.auth.application.dto.LoginCommand;
+import com.example.onharu.auth.application.dto.PasswordResetCommand;
 import com.example.onharu.auth.application.dto.SignupCommand;
 import com.example.onharu.global.exception.BusinessException;
 import com.example.onharu.global.exception.ErrorCode;
@@ -9,8 +10,8 @@ import com.example.onharu.global.jwt.JwtProvider;
 import com.example.onharu.global.jwt.LogoutTokenStore;
 import com.example.onharu.user.domain.User;
 import com.example.onharu.user.domain.UserRepository;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -72,5 +73,19 @@ public class AuthService {
 
         var expiration = jwtProvider.getExpiration(token);
         logoutTokenStore.revoke(token, expiration);
+    }
+
+    @Transactional
+    public void resetPassword(Long requesterId, PasswordResetCommand command) {
+        User requester = userRepository.findById(requesterId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+
+        //TODO: 권한 검증 로직 추가 (예: 관리자만 가능)
+
+        User target = userRepository.findByPhone(command.phone())
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+
+        String encoded = passwordEncoder.encode(command.newPassword());
+        target.updatePassword(encoded);
     }
 }

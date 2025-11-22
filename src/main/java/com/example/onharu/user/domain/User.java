@@ -59,6 +59,10 @@ public class User {
         this.code = RandomUtil.generateCode();
     }
 
+    public void updatePassword(String encodedPassword) {
+        this.password = encodedPassword;
+    }
+
     public boolean isCaregiver() {
         return hasRole(UserRole.CAREGIVER);
     }
