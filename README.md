@@ -14,6 +14,7 @@
 - **API 스펙 & 기능 문서**: [`/docs`](docs) 디렉터리 (처방전, 복약 기록, 리포트 등)
 - **Run (local)**: `./gradlew bootRun`
 - **Sample `.env` keys**: `application.yaml` 의 `${...}` 항목 참고 (DB, JWT, OpenAI, OCR 등)
+- **Frontend Repo**: [OnHaru Web](https://github.com/On-Haru/FE)
 
 ---
 
@@ -122,6 +123,10 @@
 
 ### Backend Architecture
 
+<div align="center">
+  <img src="src/main/resources/diagram.png" alt="OnHaru Service Architecture" width="760" />
+</div>
+
 ```
 PrescriptionController
    └─ PrescriptionService ──┬─ PrescriptionMedicationService ──> MedicineSchedule / Medicine
@@ -227,9 +232,9 @@ Components
 - **인증**: `/login`, `/signup` - JWT 기반 인증
 - **홈**: `/home` - 케어 수급자 목록, 미복용 약 알림
 - **처방전 관리**:
-  - `/medicine/register` - 카메라로 처방전 촬영 & OCR
-  - `/medicine/detail` - 처방전 상세 보기 & 수정
-  - `/medicine/previous` - 이전 처방전 목록
+    - `/medicine/register` - 카메라로 처방전 촬영 & OCR
+    - `/medicine/detail` - 처방전 상세 보기 & 수정
+    - `/medicine/previous` - 이전 처방전 목록
 - **복약 기록**: `/detail/:id` - 월간 캘린더, 복약 기록 확인
 - **리포트**: `/report` - AI 기반 월간 복약 리포트
 - **시니어 앱**: `/elder` - 오늘의 약, 복용 확인
@@ -245,7 +250,8 @@ Components
 
 ## 👥 Team
 
-- **Product & Backend**: OnHaru Platform Team (Prescriptions · MedicineSchedule · Reports · Push · OCR)
+- **Product & Backend**: OnHaru Platform Team (Prescriptions · MedicineSchedule · Reports · Push ·
+  OCR)
 - **Frontend**: React + TypeScript 기반 SPA (케어매니저 앱, 시니어 앱)
 - **Contact**: `support@onharu.example`
 
