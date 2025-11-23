@@ -22,6 +22,11 @@ public interface MedicineScheduleJpaRepository
             "WHERE p.senior.id = :seniorId")
     List<MedicineSchedule> findAllBySeniorId(@Param("seniorId") Long seniorId);
 
+    @Query("SELECT ms FROM MedicineSchedule ms " +
+            "JOIN FETCH ms.medicine m " +
+            "WHERE m.id IN :medicineIds")
+    List<MedicineSchedule> findAllByMedicineIdIn(@Param("medicineIds") List<Long> medicineIds);
+
     @Override
     @Query("SELECT ms FROM MedicineSchedule ms " +
             "JOIN FETCH ms.medicine m " +

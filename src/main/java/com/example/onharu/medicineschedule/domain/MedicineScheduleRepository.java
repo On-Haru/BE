@@ -18,4 +18,6 @@ public interface MedicineScheduleRepository {
     void deleteByMedicineIdIn(List<Long> medicineIds);
 
     List<MedicineSchedule> findAllBySeniorId(Long seniorId);
+
+    List<MedicineSchedule> findAllByMedicineIdIn(List<Long> medicineIds);
 }

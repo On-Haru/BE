@@ -19,4 +19,6 @@ public interface TakingLogRepository {
             LocalDateTime startInclusive,
             LocalDateTime endExclusive);
 
+    void deleteByScheduleIdIn(List<Long> scheduleIds);
+
 }

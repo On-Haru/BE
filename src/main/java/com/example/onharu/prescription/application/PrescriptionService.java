@@ -6,6 +6,7 @@ import com.example.onharu.global.exception.BusinessException;
 import com.example.onharu.global.exception.ErrorCode;
 import com.example.onharu.medicine.domain.Medicine;
 import com.example.onharu.medicine.domain.MedicineRepository;
+import com.example.onharu.medicineschedule.domain.MedicineSchedule;
 import com.example.onharu.medicineschedule.domain.MedicineScheduleRepository;
 import com.example.onharu.ocr.application.ai.OcrAiScenario;
 import com.example.onharu.prescription.application.dto.PrescriptionCreateCommand;
@@ -13,6 +14,7 @@ import com.example.onharu.prescription.application.dto.PrescriptionDetailResult;
 import com.example.onharu.prescription.application.dto.PrescriptionResult;
 import com.example.onharu.prescription.domain.Prescription;
 import com.example.onharu.prescription.domain.PrescriptionRepository;
+import com.example.onharu.takinglog.domain.TakingLogRepository;
 import com.example.onharu.user.domain.User;
 import com.example.onharu.user.domain.UserRepository;
 import com.example.onharu.user.domain.UserRole;
@@ -33,6 +35,7 @@ public class PrescriptionService {
     private final PrescriptionMedicationService prescriptionMedicationService;
     private final MedicineRepository medicineRepository;
     private final MedicineScheduleRepository medicineScheduleRepository;
+    private final TakingLogRepository takingLogRepository;
     private final UserRepository userRepository;
     private final OCRClient ocrClient;
     private final AiClient aiClient;
@@ -79,16 +82,7 @@ public class PrescriptionService {
                 command.note()
         );
 
-        List<Medicine> medicines = medicineRepository.findByPrescriptionId(prescriptionId);
-        List<Long> medicineIds = medicines.stream()
-                .map(Medicine::getId)
-                .toList();
-
-        if (!medicineIds.isEmpty()) {
-            medicineScheduleRepository.deleteByMedicineIdIn(medicineIds);
-            medicineRepository.deleteAllByPrescriptionId(prescriptionId);
-        }
-
+        removeMedicinesAndLogs(prescriptionId);
         prescriptionMedicationService.registerMedicines(prescription, command);
 
         return PrescriptionResult.from(prescription);
@@ -99,16 +93,7 @@ public class PrescriptionService {
         Prescription prescription = prescriptionRepository.findById(prescriptionId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.PRESCRIPTION_NOT_FOUND));
 
-        List<Medicine> medicines = medicineRepository.findByPrescriptionId(prescriptionId);
-        List<Long> medicineIds = medicines.stream()
-                .map(Medicine::getId)
-                .toList();
-
-        if (!medicineIds.isEmpty()) {
-            medicineScheduleRepository.deleteByMedicineIdIn(medicineIds);
-            medicineRepository.deleteAllByPrescriptionId(prescriptionId);
-        }
-
+        removeMedicinesAndLogs(prescriptionId);
         prescriptionRepository.delete(prescription);
     }
 
@@ -130,6 +115,31 @@ public class PrescriptionService {
                 .map(this::toMedicineDetail)
                 .toList();
         return PrescriptionDetailResult.from(prescription, medicines);
+    }
+
+    private void removeMedicinesAndLogs(Long prescriptionId) {
+        List<Medicine> medicines = medicineRepository.findByPrescriptionId(prescriptionId);
+        if (medicines.isEmpty()) {
+            return;
+        }
+
+        List<Long> medicineIds = medicines.stream()
+                .map(Medicine::getId)
+                .toList();
+
+        if (!medicineIds.isEmpty()) {
+            List<Long> scheduleIds = medicineScheduleRepository.findAllByMedicineIdIn(medicineIds)
+                    .stream()
+                    .map(MedicineSchedule::getId)
+                    .toList();
+
+            if (!scheduleIds.isEmpty()) {
+                takingLogRepository.deleteByScheduleIdIn(scheduleIds);
+            }
+
+            medicineScheduleRepository.deleteByMedicineIdIn(medicineIds);
+            medicineRepository.deleteAllByPrescriptionId(prescriptionId);
+        }
     }
 
     private PrescriptionDetailResult.MedicineDetail toMedicineDetail(Medicine medicine) {

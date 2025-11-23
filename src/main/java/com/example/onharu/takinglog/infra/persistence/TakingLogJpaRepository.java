@@ -33,4 +33,11 @@ public interface TakingLogJpaRepository extends JpaRepository<TakingLog, Long>, 
                 seniorId, startInclusive, endExclusive);
     }
 
+    void deleteBySchedule_IdIn(List<Long> scheduleIds);
+
+    @Override
+    default void deleteByScheduleIdIn(List<Long> scheduleIds) {
+        deleteBySchedule_IdIn(scheduleIds);
+    }
+
 }
