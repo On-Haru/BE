@@ -37,6 +37,8 @@ public class PushSubscriptionService {
             existing.get()
                     .refresh(userId, request.expirationTime(), request.keys().p256dh(),
                             request.keys().auth());
+            log.info("Refreshed push subscription for user {} endpoint {}", userId,
+                    request.endpoint());
             return;
         }
 
@@ -48,6 +50,8 @@ public class PushSubscriptionService {
                 request.keys().auth());
 
         pushSubscriptionRepository.save(subscription);
+        log.info("Registered new push subscription for user {} endpoint {}", userId,
+                request.endpoint());
     }
 
     public boolean sendNotification(NotifyData request, Long userId) {
@@ -67,7 +71,12 @@ public class PushSubscriptionService {
                     request.scheduledDateTime());
             boolean sent = false;
 
-            for (PushSubscription entity : pushSubscriptionRepository.findAllByUserId(userId)) {
+            var subscriptions = pushSubscriptionRepository.findAllByUserId(userId);
+            log.info("Sending notification for user {} schedule {} at {} ({} subscriptions)",
+                    userId, request.scheduleId(), request.scheduledDateTime(),
+                    subscriptions.size());
+
+            for (PushSubscription entity : subscriptions) {
                 try {
                     Notification notification = new Notification(
                             entity.getEndpoint(),
@@ -77,12 +86,16 @@ public class PushSubscriptionService {
                     );
                     sendToSubscriber(webPush, entity, notification);
                     sent = true;
+                    log.info("Sent push notification to endpoint {} schedule {}", entity.getEndpoint(),
+                            request.scheduleId());
                 } catch (Exception e) {
                     log.warn("Failed to create or send notification for endpoint {}: {}",
                             entity.getEndpoint(), e.getMessage());
                     removeInvalidSubscription(entity);
                 }
             }
+            log.info("Push notification result user {} schedule {} success={}", userId,
+                    request.scheduleId(), sent);
             return sent;
         } catch (RuntimeException e) {
             log.warn("Failed to send push notification for user {}: {}", userId, e.getMessage());
@@ -102,6 +115,7 @@ public class PushSubscriptionService {
     private void removeInvalidSubscription(PushSubscription entity) {
         try {
             pushSubscriptionRepository.delete(entity);
+            log.info("Removed invalid subscription endpoint {}", entity.getEndpoint());
         } catch (Exception ignore) {
             // 삭제 실패시 무시(정리 작업에 실패한 경우)
         }

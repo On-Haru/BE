@@ -66,7 +66,7 @@ naver:
 logging:
   level:
     root: INFO
-    com.example.onharu: DEBUG
+    com.example.onharu: INFO
 
 springdoc:
   api-docs:

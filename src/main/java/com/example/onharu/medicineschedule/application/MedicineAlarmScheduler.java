@@ -50,6 +50,13 @@ public class MedicineAlarmScheduler {
                 today
         );
 
+        if (schedules.isEmpty()) {
+            log.debug("No schedules due at {}", scheduledDateTime);
+            return;
+        }
+
+        log.info("Publishing {} medicine alarms for {}", schedules.size(), scheduledDateTime);
+
         for (MedicineSchedule schedule : schedules) {
             if (!isDayEnabled(schedule, todayOfWeek)) {
                 continue;
@@ -80,6 +87,9 @@ public class MedicineAlarmScheduler {
                 log.warn("Failed to send reminder for schedule {}: {}", schedule.getId(),
                         e.getMessage());
             }
+
+            log.info("Alarm published schedule {} user {} success={} reason={}", scheduleId,
+                    userId, success, failureReason);
 
             MedicineAlarmEvent event = MedicineAlarmEvent.of(
                     schedule.getId(),
