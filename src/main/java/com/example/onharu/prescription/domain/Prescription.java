@@ -55,4 +55,12 @@ public class Prescription {
         return new Prescription(senior, issuedDate, hospitalName, doctorName, note);
     }
 
+    public void update(User senior, LocalDate issuedDate, String hospitalName, String doctorName, String note) {
+        this.senior = senior;
+        this.issuedDate = issuedDate;
+        this.hospitalName = hospitalName;
+        this.doctorName = doctorName;
+        this.note = note;
+    }
+
 }

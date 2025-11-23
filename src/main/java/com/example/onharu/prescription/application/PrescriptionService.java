@@ -63,6 +63,38 @@ public class PrescriptionService {
     }
 
     @Transactional
+    public PrescriptionResult updatePrescription(Long prescriptionId, PrescriptionCreateCommand command) {
+        Prescription prescription = prescriptionRepository.findById(prescriptionId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.PRESCRIPTION_NOT_FOUND));
+
+        User senior = userRepository.findById(command.seniorId())
+                .filter(user -> user.getRole() == UserRole.SENIOR)
+                .orElseThrow(() -> new BusinessException(ErrorCode.CARE_RECEIVER_NOT_FOUND));
+
+        prescription.update(
+                senior,
+                command.issuedDate(),
+                command.hospitalName(),
+                command.doctorName(),
+                command.note()
+        );
+
+        List<Medicine> medicines = medicineRepository.findByPrescriptionId(prescriptionId);
+        List<Long> medicineIds = medicines.stream()
+                .map(Medicine::getId)
+                .toList();
+
+        if (!medicineIds.isEmpty()) {
+            medicineScheduleRepository.deleteByMedicineIdIn(medicineIds);
+            medicineRepository.deleteAllByPrescriptionId(prescriptionId);
+        }
+
+        prescriptionMedicationService.registerMedicines(prescription, command);
+
+        return PrescriptionResult.from(prescription);
+    }
+
+    @Transactional
     public void deletePrescription(Long prescriptionId) {
         Prescription prescription = prescriptionRepository.findById(prescriptionId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.PRESCRIPTION_NOT_FOUND));

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -56,6 +57,18 @@ public class PrescriptionController {
                 .map(PrescriptionResponse::fromDetail)
                 .toList();
         return ApiResponseFactory.success(responses);
+    }
+
+    @PutMapping("/{prescriptionId}")
+    public ApiResponse<PrescriptionResponse> update(
+            @PathVariable Long prescriptionId,
+            @Valid @RequestBody PrescriptionRequest request
+    ) {
+        PrescriptionResult result = prescriptionService.updatePrescription(
+                prescriptionId,
+                PrescriptionRequest.toCommand(request)
+        );
+        return ApiResponseFactory.success(PrescriptionResponse.from(result));
     }
 
     @DeleteMapping("/{prescriptionId}")
