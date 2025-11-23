@@ -11,6 +11,7 @@
 
 ## 🔗 Links & Assets
 
+- **서비스 URL**: [https://onharu.my](https://onharu.my)
 - **API 스펙 & 기능 문서**: [`/docs`](docs) 디렉터리 (처방전, 복약 기록, 리포트 등)
 - **Run (local)**: `./gradlew bootRun`
 - **Sample `.env` keys**: `application.yaml` 의 `${...}` 항목 참고 (DB, JWT, OpenAI, OCR 등)
