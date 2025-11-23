@@ -16,6 +16,12 @@ public interface MedicineScheduleJpaRepository
 
     void deleteByMedicineIdIn(List<Long> medicineIds);
 
+    @Query("SELECT ms FROM MedicineSchedule ms " +
+            "JOIN FETCH ms.medicine m " +
+            "JOIN FETCH m.prescription p " +
+            "WHERE p.senior.id = :seniorId")
+    List<MedicineSchedule> findAllBySeniorId(@Param("seniorId") Long seniorId);
+
     @Override
     @Query("SELECT ms FROM MedicineSchedule ms " +
             "JOIN FETCH ms.medicine m " +

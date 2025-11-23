@@ -72,7 +72,9 @@ public class TakingLogService {
                 endExclusive
         );
 
-        return takingLogMonthlyCalculator.calculate(yearMonth, logs);
+        List<MedicineSchedule> schedules = medicineScheduleRepository.findAllBySeniorId(seniorId);
+
+        return takingLogMonthlyCalculator.calculate(yearMonth, logs, schedules);
     }
 
     @Transactional
