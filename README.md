@@ -26,7 +26,7 @@
 ## 팀 소개
 
 - **팀명**: 온하루 (OnHaru)
-- **구성**: Backend/AI 플래폼 팀, Frontend 팀으로 나뉘며, 시니어 돌봄 도메인 경험을 보유한 멤버들로 구성
+- **구성**: FE 및 BE 프로젝트 팀원은 아래에 있습니다
 - **Frontend Repository**: [github.com/On-Haru/FE](https://github.com/On-Haru/FE)
 
 ---
@@ -46,9 +46,9 @@
 
 ### 타 서비스와의 차별점
 
-| 기존 서비스 | 기능 | 한계 |
-| --- | --- | --- |
-| 약먹자 | 복약 알림 설정, 약 정보 검색 | 보호자/복지기관 연계, 처방전 기반 자동화 부재 |
+| 기존 서비스   | 기능                           | 한계                         |
+|----------|------------------------------|----------------------------|
+| 약먹자      | 복약 알림 설정, 약 정보 검색            | 보호자/복지기관 연계, 처방전 기반 자동화 부재 |
 | 약 알림 태양이 | 복약 시간 알림, 미응답 시 전화 알림, 복약 기록 | 시니어-보호자 실시간 공유, AI 리포트 미지원 |
 
 **하루온**은 다음 기능으로 차별화합니다.
@@ -62,24 +62,27 @@
 
 ## 구현 내용 및 결과물
 
-1. **처방전 캡처 & OCR 기반 약 정보 자동 등록**  
-   - 처방전 이미지를 업로드하면 Naver Clova OCR + Spring AI 시나리오로 JSON을 생성하고, 약 이름/수량/기간/스케줄을 자동 매핑합니다.
-2. **복약 스케줄 생성 & 실시간 푸시 알림**  
-   - 약 정보 등록과 동시에 `medicine_schedules` 및 푸시 알림이 생성되어 보호자 개입 없이 시니어에게 복약 알림을 전달합니다.
-3. **Taking Log 자동 생성 & 월간 캘린더 기록**  
-   - 알림 발송 시점에 `TakingLog` 슬롯이 자동 생성되고, 복약 완료 여부에 따라 `COMPLETE/PARTIAL/MISSED/PLANNED` 상태를 계산합니다.
-4. **AI 기반 복약 리포트 & 통계 제공**  
-   - TakingLog 기반 통계를 만든 뒤 Spring AI(OpenAI)로 요약 문장/위험 태그/개선 제안을 생성하여 월간 리포트를 자동 저장합니다.
-5. **케어 네트워크 구성 & 역할 기반 인증**  
-   - Senior/Caregiver 계정을 분리 관리하고 JWT 기반 인증으로 연결하여, 보호자가 시니어 복약 현황·리포트·알림을 즉시 확인할 수 있습니다.
+1. **처방전 캡처 & OCR 기반 약 정보 자동 등록**
+    - 처방전 이미지를 업로드하면 Naver Clova OCR + Spring AI 시나리오로 JSON을 생성하고, 약 이름/수량/기간/스케줄을 자동 매핑합니다.
+2. **복약 스케줄 생성 & 실시간 푸시 알림**
+    - 약 정보 등록과 동시에 `medicine_schedules` 및 푸시 알림이 생성되어 보호자 개입 없이 시니어에게 복약 알림을 전달합니다.
+3. **Taking Log 자동 생성 & 월간 캘린더 기록**
+    - 알림 발송 시점에 `TakingLog` 슬롯이 자동 생성되고, 복약 완료 여부에 따라 `COMPLETE/PARTIAL/MISSED/PLANNED` 상태를 계산합니다.
+4. **AI 기반 복약 리포트 & 통계 제공**
+    - TakingLog 기반 통계를 만든 뒤 Spring AI(OpenAI)로 요약 문장/위험 태그/개선 제안을 생성하여 월간 리포트를 자동 저장합니다.
+5. **케어 네트워크 구성 & 역할 기반 인증**
+    - Senior/Caregiver 계정을 분리 관리하고 JWT 기반 인증으로 연결하여, 보호자가 시니어 복약 현황·리포트·알림을 즉시 확인할 수 있습니다.
 
 ---
 
 ## 구현 방식
 
-- **Frontend**: TypeScript + React + Vite, TailwindCSS & 커스텀 UI, React Router, Axios, GSAP, PWA(Service Worker) 구성
-- **Backend**: Java 21, Spring Boot 3.3, Spring Validation, Spring Data JPA, Spring Security/JWT, Spring AI(OpenAI), Naver Clova OCR 연동
-- **Messaging & Scheduler**: Spring `@Scheduled` 크론 기반 `MedicineAlarmScheduler`, ApplicationEventPublisher로 Push/TakingLog 분리 처리
+- **Frontend**: TypeScript + React + Vite, TailwindCSS & 커스텀 UI, React Router, Axios, GSAP, PWA(
+  Service Worker) 구성
+- **Backend**: Java 21, Spring Boot 3.3, Spring Validation, Spring Data JPA, Spring Security/JWT,
+  Spring AI(OpenAI), Naver Clova OCR 연동
+- **Messaging & Scheduler**: Spring `@Scheduled` 크론 기반 `MedicineAlarmScheduler`,
+  ApplicationEventPublisher로 Push/TakingLog 분리 처리
 - **Database**: MySQL(InnoDB), HikariCP, JPA EntityGraph 최적화
 - **Infrastructure**: Docker, GitHub Actions 기반 무중단 배포, Web Push(VAPID), AWS EC2/ACM
 - **로컬 실행**: `./gradlew bootRun` (환경 변수는 `.env` 혹은 시스템 환경 변수로 주입)
@@ -127,26 +130,26 @@ ReportController
 
 ## 도메인 하이라이트
 
-| 엔티티 | 설명 |
-| --- | --- |
-| `users`, `caregivers` | 시니어/보호자 계정, JWT 인증, 역할 기반 접근 제어 |
+| 엔티티                                                | 설명                                     |
+|----------------------------------------------------|----------------------------------------|
+| `users`, `caregivers`                              | 시니어/보호자 계정, JWT 인증, 역할 기반 접근 제어        |
 | `prescriptions`, `medicines`, `medicine_schedules` | 처방전 → 약 → 복약 스케줄 체인, OCR 및 수동 입력 모두 지원 |
-| `taking_logs` | 알림 슬롯/복약 기록, 미래 스케줄과 결합해 DayStatus 계산 |
-| `reports` | 월간 복약 리포트 JSON 저장, AI 호출 최소화 |
-| `push` | VAPID 기반 Web Push 구독자 관리 |
+| `taking_logs`                                      | 알림 슬롯/복약 기록, 미래 스케줄과 결합해 DayStatus 계산  |
+| `reports`                                          | 월간 복약 리포트 JSON 저장, AI 호출 최소화           |
+| `push`                                             | VAPID 기반 Web Push 구독자 관리               |
 
 ---
 
 ## 향후 개선 및 발전 방향
 
-1. **서비스 고도화 및 기능 확장**  
-   - 성분 중복 감지, 부작용 위험 예측, 약 상호작용 분석 등 의료 보조 기능을 추가하여 더 정밀한 케어 데이터 제공.
-2. **IoT 기기 연동**  
-   - 스마트 약통/웨어러블과 연동하여 복약 완료 여부를 자동 감지, 사용자 입력 의존도를 낮추고 정확한 실시간 데이터 수집.
-3. **약 보관·재고/유통기한 관리**  
-   - 유통기한 임박 알림, 남은 복약량 기반 재구매 시점 안내 기능으로 약 관리 전반을 자동화.
-4. **음성 UX 확대**  
-   - 음성 안내 알림, 음성 복약 확인 등 고령층 친화 기능을 강화하여 접근성 향상.
+1. **서비스 고도화 및 기능 확장**
+    - 성분 중복 감지, 부작용 위험 예측, 약 상호작용 분석 등 의료 보조 기능을 추가하여 더 정밀한 케어 데이터 제공.
+2. **IoT 기기 연동**
+    - 스마트 약통/웨어러블과 연동하여 복약 완료 여부를 자동 감지, 사용자 입력 의존도를 낮추고 정확한 실시간 데이터 수집.
+3. **약 보관·재고/유통기한 관리**
+    - 유통기한 임박 알림, 남은 복약량 기반 재구매 시점 안내 기능으로 약 관리 전반을 자동화.
+4. **음성 UX 확대**
+    - 음성 안내 알림, 음성 복약 확인 등 고령층 친화 기능을 강화하여 접근성 향상.
 
 ---
 
@@ -156,7 +159,8 @@ ReportController
 ./gradlew bootRun
 ```
 
-- 사전 준비: `.env` 파일 또는 시스템 환경 변수에 `DB_URL`, `DB_USERNAME`, `DB_PASSWORD`, `OPENAI_API_KEY`, `NAVER_OCR_*`, `JWT_SECRET`, `PUBLIC/PRIVATE_VAPID_KEY` 등을 설정합니다.
+- 사전 준비: `.env` 파일 또는 시스템 환경 변수에 `DB_URL`, `DB_USERNAME`, `DB_PASSWORD`, `OPENAI_API_KEY`,
+  `NAVER_OCR_*`, `JWT_SECRET`, `PUBLIC/PRIVATE_VAPID_KEY` 등을 설정합니다.
 - Swagger: `http://localhost:8080/swagger-ui`
 - 주요 API 문서: `docs/prescription-api.md`, `docs/takinglog-api.md`, `docs/report-api.md`
 
@@ -379,11 +383,11 @@ Components
 
 ---
 
-## 👥 Team
+## 👥 프로젝트 팀원
 
-- **Product & Backend**: OnHaru Platform Team (Prescriptions · MedicineSchedule · Reports · Push ·
-  OCR)
-- **Frontend**: React + TypeScript 기반 SPA (케어매니저 앱, 시니어 앱)
-- **Contact**: `support@onharu.example`
+|                                                            Backend                                                            |                                                         Frontend                                                          |                                                             Frontend                                                              |                                                           Frontend                                                            |
+|:-----------------------------------------------------------------------------------------------------------------------------:|:-------------------------------------------------------------------------------------------------------------------------:|:---------------------------------------------------------------------------------------------------------------------------------:|:-----------------------------------------------------------------------------------------------------------------------------:|
+| <img src="https://github.com/jbh010204.png" width="150" height="150" alt="장보형"/> <br> **[장보형](https://github.com/jbh010204)** | <img src="https://github.com/cktjgus.png" width="150" height="150" alt="차서현"/> <br> **[차서현](https://github.com/cktjgus)** | <img src="https://github.com/parkjihyoun.png" width="150" height="150" alt="박지현"/> <br> **[박지현](https://github.com/parkjihyoun)** | <img src="https://github.com/sinyeowon.png" width="150" height="150" alt="신여원"/> <br> **[신여원](https://github.com/sinyeowon)** |
+|                                                          **Backend**                                                          |                                                       **Frontend**                                                        |                                                           **Frontend**                                                            |                                                         **Frontend**                                                          |
 
-프로젝트나 문서 기여를 원하시면 PR을 열고 `docs/` 폴더에 변경 사항을 기록해주세요.
+문의: `support@onharu.example`
