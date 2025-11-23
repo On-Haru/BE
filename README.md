@@ -1,34 +1,164 @@
 <div align="center">
-  <h1>OnHaru</h1>
-  <h3>시니어 복약 동행을 돕는 AI 기반 케어 플랫폼</h3>
+  <h1>&lt;온하루&gt; - &lt;하루온&gt;</h1>
+  <h3>독거 시니어와 보호자 사이의 복약·건강 관리 격차를 해소하는 서비스</h3>
   <p>
-    처방전 등록부터 복약 알림, 복약 기록, 리포트까지 한 곳에서 관리합니다.<br />
-    가족과 케어매니저가 안심하고 복약 여정을 함께할 수 있도록 돕습니다.
+    처방전 등록부터 복약 알림, 복약 기록, 리포트까지 한 곳에서 관리하여<br />
+    시니어 + 보호자 + 복지기관을 모두 연결하는 통합 복약 관리 플랫폼입니다.
   </p>
 </div>
 
 ---
 
-## 🔗 Links & Assets
+## 서비스 요약
 
+- **서비스명**: 하루온 (OnHaru)
+- **핵심 가치**: 독거/취약 시니어의 복약 루틴을 자동화하고, 보호자·복지기관이 실시간으로 상태를 확인할 수 있도록 지원
 - **서비스 URL**: [https://onharu.my](https://onharu.my)
-- **API 스펙 & 기능 문서**: [`/docs`](docs) 디렉터리 (처방전, 복약 기록, 리포트 등)
-- **Run (local)**: `./gradlew bootRun`
-- **Sample `.env` keys**: `application.yaml` 의 `${...}` 항목 참고 (DB, JWT, OpenAI, OCR 등)
-- **Frontend Repo**: [OnHaru Web](https://github.com/On-Haru/FE)
 
 ---
 
-## 🧐 Why OnHaru?
+## 주제 구분
 
-> "약은 꼭 챙겨 드셨나요?"를 묻는 대신, **OnHaru**가 처방전부터 복약 리포트까지 자동으로 챙깁니다.
+- **C타입 복지 사각지대 대상 서비스**: 위안부 피해자, 참전 용사, 독거 어르신 등 돌봄 사각지대 어르신의 복약 케어를 중심으로 설계
 
-시니어/케어 수급자의 복약 루틴은 약 처방-약 보관-알람-복약 확인-리포트까지 많은 사람이 관여해야 하는 여정입니다. OnHaru는
+---
+
+## 팀 소개
+
+- **팀명**: 온하루 (OnHaru)
+- **구성**: Backend/AI 플래폼 팀, Frontend 팀으로 나뉘며, 시니어 돌봄 도메인 경험을 보유한 멤버들로 구성
+- **Frontend Repository**: [github.com/On-Haru/FE](https://github.com/On-Haru/FE)
+
+---
+
+## 시연 영상
+
+- (추가 예정) – YouTube 링크를 통해 전체 데모 영상을 제공할 예정입니다.
+
+---
+
+## 서비스 소개
+
+### 서비스 개요
+
+시니어/케어 수급자의 복약 루틴은 약 처방 → 약 보관 → 알람 → 복약 확인 → 리포트까지 여러 단계와 사람의 개입이 필요합니다. OnHaru는
 처방전을 기준으로 **약·스케줄·알림·복약 로그**를 일관된 데이터로 관리하고, AI를 통해 리포트/설명을 자동 작성하여 케어 부담을 줄입니다.
 
+### 타 서비스와의 차별점
+
+| 기존 서비스 | 기능 | 한계 |
+| --- | --- | --- |
+| 약먹자 | 복약 알림 설정, 약 정보 검색 | 보호자/복지기관 연계, 처방전 기반 자동화 부재 |
+| 약 알림 태양이 | 복약 시간 알림, 미응답 시 전화 알림, 복약 기록 | 시니어-보호자 실시간 공유, AI 리포트 미지원 |
+
+**하루온**은 다음 기능으로 차별화합니다.
+
+1. 복약 알림 + 실시간 Taking Log 공유 (보호자/기관 전용 뷰)
+2. 처방전 촬영 & OCR 인식으로 약/스케줄 정보 자동 등록
+3. 고령층 맞춤 UI/UX + 보호자 전용 대시보드
+4. AI 요약·위험 태그·개선 제안을 포함한 월간 리포트
+
 ---
 
-## ✨ Key Features
+## 구현 내용 및 결과물
+
+1. **처방전 캡처 & OCR 기반 약 정보 자동 등록**  
+   - 처방전 이미지를 업로드하면 Naver Clova OCR + Spring AI 시나리오로 JSON을 생성하고, 약 이름/수량/기간/스케줄을 자동 매핑합니다.
+2. **복약 스케줄 생성 & 실시간 푸시 알림**  
+   - 약 정보 등록과 동시에 `medicine_schedules` 및 푸시 알림이 생성되어 보호자 개입 없이 시니어에게 복약 알림을 전달합니다.
+3. **Taking Log 자동 생성 & 월간 캘린더 기록**  
+   - 알림 발송 시점에 `TakingLog` 슬롯이 자동 생성되고, 복약 완료 여부에 따라 `COMPLETE/PARTIAL/MISSED/PLANNED` 상태를 계산합니다.
+4. **AI 기반 복약 리포트 & 통계 제공**  
+   - TakingLog 기반 통계를 만든 뒤 Spring AI(OpenAI)로 요약 문장/위험 태그/개선 제안을 생성하여 월간 리포트를 자동 저장합니다.
+5. **케어 네트워크 구성 & 역할 기반 인증**  
+   - Senior/Caregiver 계정을 분리 관리하고 JWT 기반 인증으로 연결하여, 보호자가 시니어 복약 현황·리포트·알림을 즉시 확인할 수 있습니다.
+
+---
+
+## 구현 방식
+
+- **Frontend**: TypeScript + React + Vite, TailwindCSS & 커스텀 UI, React Router, Axios, GSAP, PWA(Service Worker) 구성
+- **Backend**: Java 21, Spring Boot 3.3, Spring Validation, Spring Data JPA, Spring Security/JWT, Spring AI(OpenAI), Naver Clova OCR 연동
+- **Messaging & Scheduler**: Spring `@Scheduled` 크론 기반 `MedicineAlarmScheduler`, ApplicationEventPublisher로 Push/TakingLog 분리 처리
+- **Database**: MySQL(InnoDB), HikariCP, JPA EntityGraph 최적화
+- **Infrastructure**: Docker, GitHub Actions 기반 무중단 배포, Web Push(VAPID), AWS EC2/ACM
+- **로컬 실행**: `./gradlew bootRun` (환경 변수는 `.env` 혹은 시스템 환경 변수로 주입)
+
+---
+
+## 주요 링크 & 문서
+
+- **서비스 URL**: [https://onharu.my](https://onharu.my)
+- **API·기능 문서**: [`/docs`](docs) (처방전, Taking Log, Report 등)
+- **Frontend Repository**: [github.com/On-Haru/FE](https://github.com/On-Haru/FE)
+- **Swagger UI**: `/swagger-ui`
+- **환경 변수 참고**: `src/main/resources/application.yaml`
+
+---
+
+## 시스템 아키텍처
+
+<div align="center">
+  <img src="src/main/resources/diagram.png" alt="OnHaru Service Architecture" width="760" />
+</div>
+
+```
+PrescriptionController
+   └─ PrescriptionService ──┬─ PrescriptionMedicationService ──> MedicineSchedule / Medicine
+                             └─ OCRClient + AiClient (이미지 업로드)
+
+MedicineAlarmScheduler (@Scheduled)
+   └─ MedicineAlarmEvent (ApplicationEventPublisher)
+         ├─ Push 알림 (PushSubscriptionService)
+         └─ TakingLogService.recordTaking → TakingLog 저장
+
+TakingLogMonthlyCalculator
+   └─ TakingLog + MedicineSchedule 로 DaySummary/SlotSummary 생성
+
+ReportController
+   └─ StatisticsService → PromptManager → AiClient → ReportService
+```
+
+- **Event Driven**: 복약 알림 이벤트 하나로 Push 알림과 TakingLog 생성을 동시에 처리
+- **AI Pipeline**: 통계 → 프롬프트 → AI 응답 → ReportPayload 저장
+- **Planned Slots**: 미래 스케줄을 합성하여 월간 캘린더에 PLANNED 상태를 표시
+
+---
+
+## 도메인 하이라이트
+
+| 엔티티 | 설명 |
+| --- | --- |
+| `users`, `caregivers` | 시니어/보호자 계정, JWT 인증, 역할 기반 접근 제어 |
+| `prescriptions`, `medicines`, `medicine_schedules` | 처방전 → 약 → 복약 스케줄 체인, OCR 및 수동 입력 모두 지원 |
+| `taking_logs` | 알림 슬롯/복약 기록, 미래 스케줄과 결합해 DayStatus 계산 |
+| `reports` | 월간 복약 리포트 JSON 저장, AI 호출 최소화 |
+| `push` | VAPID 기반 Web Push 구독자 관리 |
+
+---
+
+## 향후 개선 및 발전 방향
+
+1. **서비스 고도화 및 기능 확장**  
+   - 성분 중복 감지, 부작용 위험 예측, 약 상호작용 분석 등 의료 보조 기능을 추가하여 더 정밀한 케어 데이터 제공.
+2. **IoT 기기 연동**  
+   - 스마트 약통/웨어러블과 연동하여 복약 완료 여부를 자동 감지, 사용자 입력 의존도를 낮추고 정확한 실시간 데이터 수집.
+3. **약 보관·재고/유통기한 관리**  
+   - 유통기한 임박 알림, 남은 복약량 기반 재구매 시점 안내 기능으로 약 관리 전반을 자동화.
+4. **음성 UX 확대**  
+   - 음성 안내 알림, 음성 복약 확인 등 고령층 친화 기능을 강화하여 접근성 향상.
+
+---
+
+## 로컬 실행 요약
+
+```bash
+./gradlew bootRun
+```
+
+- 사전 준비: `.env` 파일 또는 시스템 환경 변수에 `DB_URL`, `DB_USERNAME`, `DB_PASSWORD`, `OPENAI_API_KEY`, `NAVER_OCR_*`, `JWT_SECRET`, `PUBLIC/PRIVATE_VAPID_KEY` 등을 설정합니다.
+- Swagger: `http://localhost:8080/swagger-ui`
+- 주요 API 문서: `docs/prescription-api.md`, `docs/takinglog-api.md`, `docs/report-api.md`
 
 ### 1. 처방전 캡처 & OCR 후처리
 
