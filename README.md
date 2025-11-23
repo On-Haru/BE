@@ -100,6 +100,17 @@
 ![GitHub Actions](https://img.shields.io/badge/GitHub%20Actions-2088FF?style=for-the-badge&logo=githubactions&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
 
+### 💻 Frontend
+
+![React](https://img.shields.io/badge/React%2019.2-61DAFB?style=for-the-badge&logo=react&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript%205.9-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite%207.2-646CFF?style=for-the-badge&logo=vite&logoColor=white)
+![TailwindCSS](https://img.shields.io/badge/TailwindCSS%204.1-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
+![React Router](https://img.shields.io/badge/React%20Router%207.9-CA4245?style=for-the-badge&logo=react-router&logoColor=white)
+![Axios](https://img.shields.io/badge/Axios%201.13-5A29E4?style=for-the-badge&logo=axios&logoColor=white)
+![GSAP](https://img.shields.io/badge/GSAP%203.13-88CE02?style=for-the-badge&logo=greensock&logoColor=white)
+![PWA](https://img.shields.io/badge/PWA-5A0FC8?style=for-the-badge&logo=pwa&logoColor=white)
+
 ### 🔧 Dev Tools
 
 ![Git](https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white)
@@ -108,6 +119,8 @@
 ---
 
 ## 🏗 Architecture Snapshot
+
+### Backend Architecture
 
 ```
 PrescriptionController
@@ -129,6 +142,40 @@ ReportController
 - **Event Driven**: 복약 알림은 이벤트를 통해 TakingLog와 Push에 동시에 전달되어 도메인 간 의존을 줄였습니다.
 - **AI Pipeline**: 통계 → 프롬프트 → AI 응답 → ReportPayload 로 이어지는 단방향 파이프라인.
 - **Planned Slots**: 월간 캘린더는 미래 스케줄을 합성하여 아직 발생하지 않은 복약도 미리 보여줍니다.
+
+### Frontend Architecture
+
+```
+App (React Router)
+   ├─ Layout (Header + Footer)
+   │
+   ├─ Auth Pages
+   │   ├─ RoleSelectPage
+   │   ├─ LoginPage
+   │   └─ SignupPage
+   │
+   ├─ Caregiver Pages
+   │   ├─ HomePage (케어 수급자 목록, 미복용 약 알림)
+   │   ├─ DetailPage (월간 캘린더, 복약 기록)
+   │   ├─ MedicineRegisterPage (처방전 촬영 & OCR)
+   │   ├─ MedicineDetailPage (처방전 상세 & 수정)
+   │   ├─ PreviousMedicinePage (이전 처방전 목록)
+   │   ├─ ReportPage (AI 리포트)
+   │   └─ MyPagePage
+   │
+   └─ Elder Pages
+       └─ ElderHomePage (오늘의 약, 복용 확인)
+
+Components
+   ├─ BaseModal (공통 모달 컴포넌트)
+   ├─ ToastContext (에러/성공 메시지)
+   └─ Service Workers (PWA, Push 알림)
+```
+
+- **Component-based**: 재사용 가능한 컴포넌트 구조 (BaseModal, TableList, AlarmList 등)
+- **Context API**: Toast 메시지, Install Prompt 등 전역 상태 관리
+- **Custom Hooks**: useTodayMedications, usePushSubscription 등 비즈니스 로직 분리
+- **PWA Support**: Service Worker를 통한 오프라인 지원 및 푸시 알림
 
 ---
 
@@ -155,6 +202,8 @@ ReportController
 
 ## 📁 Jump-start Guide
 
+### Backend Setup
+
 1. **의존성 설치**: `./gradlew dependencies` (필요 시 로컬 Gradle 캐시 준비)
 2. **환경 변수**: `.env` 또는 시스템 환경변수에 `DB_URL`, `OPENAI_API_KEY`, `NAVER_OCR_*`, `JWT_SECRET` 등을 설정
 3. **DB 준비**: MySQL에 `onharu` 스키마 생성 → `application.yaml` 의 URL/계정 매핑
@@ -165,13 +214,39 @@ ReportController
     - 복약 기록/캘린더: `docs/takinglog-api.md`
     - 리포트 & AI: `docs/report-api.md`, `docs/report-module.md`
 
+### Frontend Setup
+
+1. **의존성 설치**: `pnpm install` (또는 `npm install`)
+2. **환경 변수**: `.env` 파일에 `VITE_API_BASE_URL` 설정 (백엔드 API URL)
+3. **개발 서버 실행**: `pnpm dev` (기본 포트: 5173)
+4. **빌드**: `pnpm build` (프로덕션 빌드)
+5. **프리뷰**: `pnpm preview` (빌드된 앱 미리보기)
+
+#### 주요 페이지 구조
+
+- **인증**: `/login`, `/signup` - JWT 기반 인증
+- **홈**: `/home` - 케어 수급자 목록, 미복용 약 알림
+- **처방전 관리**:
+  - `/medicine/register` - 카메라로 처방전 촬영 & OCR
+  - `/medicine/detail` - 처방전 상세 보기 & 수정
+  - `/medicine/previous` - 이전 처방전 목록
+- **복약 기록**: `/detail/:id` - 월간 캘린더, 복약 기록 확인
+- **리포트**: `/report` - AI 기반 월간 복약 리포트
+- **시니어 앱**: `/elder` - 오늘의 약, 복용 확인
+
+#### 주요 기능
+
+- **처방전 OCR**: 카메라 촬영 → Naver OCR → 자동 약 정보 추출
+- **실시간 알림**: Web Push를 통한 복약 알림
+- **PWA**: 모바일 앱처럼 설치 가능, 오프라인 지원
+- **반응형 디자인**: 모바일 우선 설계 (393px 기준)
+
 ---
 
 ## 👥 Team
 
-- **Product & Backend**: OnHaru Platform Team (Prescriptions · MedicineSchedule · Reports · Push ·
-  OCR)
-- **Frontend & Caregiver App**: Companion SPA (not part of this repository)
+- **Product & Backend**: OnHaru Platform Team (Prescriptions · MedicineSchedule · Reports · Push · OCR)
+- **Frontend**: React + TypeScript 기반 SPA (케어매니저 앱, 시니어 앱)
 - **Contact**: `support@onharu.example`
 
 프로젝트나 문서 기여를 원하시면 PR을 열고 `docs/` 폴더에 변경 사항을 기록해주세요.
