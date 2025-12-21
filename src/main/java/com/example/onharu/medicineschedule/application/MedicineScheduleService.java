@@ -8,6 +8,7 @@ import com.example.onharu.medicineschedule.application.dto.MedicineScheduleCreat
 import com.example.onharu.medicineschedule.application.dto.MedicineScheduleResult;
 import com.example.onharu.medicineschedule.domain.MedicineSchedule;
 import com.example.onharu.medicineschedule.domain.MedicineScheduleRepository;
+import com.example.onharu.takinglog.application.TakingLogSlotInitializer;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,7 @@ public class MedicineScheduleService {
 
     private final MedicineScheduleRepository medicineScheduleRepository;
     private final MedicineRepository medicineRepository;
+    private final TakingLogSlotInitializer takingLogSlotInitializer;
 
     @Transactional
     public MedicineScheduleResult createSchedule(MedicineScheduleCreateCommand command) {
@@ -36,7 +38,9 @@ public class MedicineScheduleService {
                 command.startDate(),
                 command.endDate()
         );
-        return MedicineScheduleResult.from(medicineScheduleRepository.save(schedule));
+        MedicineSchedule saved = medicineScheduleRepository.save(schedule);
+        takingLogSlotInitializer.backfillPastSlots(saved);
+        return MedicineScheduleResult.from(saved);
     }
 
     public MedicineScheduleResult getSchedule(Long scheduleId) {
