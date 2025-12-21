@@ -8,7 +8,9 @@ WHERE schedule_id IN (9001, 9002, 9003)
 
 -- 기본 엔터티
 INSERT INTO users (id, user_name, phone, year, password, code, role)
-VALUES (1001, '김온하', '01011112222', '1955', '{noop}temp1234', 123456, 'SENIOR')
+VALUES (1001, '이춘자', '01000000000', '1955',
+        '8f6c3b67b4f90c23b58724df1dea7e4ddb30c300a54a03f87bd401d7280ead48db75e45e46f9648f68431ce279cd272f',
+        123456, 'SENIOR')
 ON DUPLICATE KEY UPDATE user_name = VALUES(user_name);
 
 INSERT INTO prescriptions (id, senior_id, issued_date, hospital_name, doctor_name, note)

@@ -18,6 +18,10 @@ public enum ErrorCode {
 
     // Push domain
     PUSH_NOTIFICATION_FAILED("PS001", HttpStatus.BAD_REQUEST, "알람을 보내지 못했습니다."),
+    MOBILE_PUSH_TOKEN_VALIDATION_FAILED("PS101", HttpStatus.BAD_REQUEST, "모바일 디바이스 토큰 요청이 올바르지 않습니다."),
+    MOBILE_PUSH_TOKEN_SAVE_FAILED("PS102", HttpStatus.INTERNAL_SERVER_ERROR, "모바일 디바이스 토큰을 저장하지 못했습니다."),
+    MOBILE_PUSH_TOKEN_NOT_FOUND("PS111", HttpStatus.NOT_FOUND, "요청한 모바일 디바이스 토큰이 없습니다."),
+    MOBILE_PUSH_TOKEN_DELETE_FAILED("PS112", HttpStatus.INTERNAL_SERVER_ERROR, "모바일 디바이스 토큰을 삭제하지 못했습니다."),
 
     // Prescription & medicine domain
     PRESCRIPTION_NOT_FOUND("PR001", HttpStatus.NOT_FOUND, "처방전을 찾을 수 없습니다."),
